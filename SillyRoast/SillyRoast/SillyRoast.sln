@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SillyRoast", "SillyRoast\SillyRoast.csproj", "{31007C70-D486-4A0E-8CB1-7976B06FE791}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31007C70-D486-4A0E-8CB1-7976B06FE791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31007C70-D486-4A0E-8CB1-7976B06FE791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31007C70-D486-4A0E-8CB1-7976B06FE791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31007C70-D486-4A0E-8CB1-7976B06FE791}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D9DFC3AB-FF92-4E43-BA50-DA9D9FBDDAA6}
+	EndGlobalSection
+EndGlobal
