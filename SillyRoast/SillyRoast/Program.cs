@@ -24,8 +24,7 @@ namespace SillyRoast
             SearchResultCollection results;
             DirectorySearcher ds = null;
 
-            DirectoryEntry de = new DirectoryEntry(GetCurrentDomainPath());
-            de.AuthenticationType = AuthenticationTypes.Secure;
+            DirectoryEntry de = new DirectoryEntry();
             ds = new DirectorySearcher(de);
             ds.Filter = query;
 
