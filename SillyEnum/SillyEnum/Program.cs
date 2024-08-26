@@ -81,29 +81,35 @@ namespace SillyEnum
 
         static void Main(string[] args)
         {
-           
-            if (args.Length > 1)
+            try
             {
-                Console.WriteLine("Please only supply a single option");
+                if (args.Length > 1)
+                {
+                    Console.WriteLine("Please only supply a single option");
+                }
+                else if (args.Contains("dclist"))
+                {
+                    Console.WriteLine("[+] Enumerating Domain Controllers:");
+                    dclist();
+                }
+                else if (args.Contains("users"))
+                {
+                    Console.WriteLine("[+] Enumerating user accounts:");
+                    users();
+                }
+                else if (args.Contains("computers"))
+                {
+                    Console.WriteLine("[+] Enumerating computer accounts:");
+                    computers();
+                }
+                else
+                {
+                    Help();
+                }
             }
-            else if (args.Contains("dclist"))
+            catch (Exception ex)
             {
-                Console.WriteLine("[+] Enumerating Domain Controllers:");
-                dclist();
-            }
-            else if (args.Contains("users"))
-            {
-                Console.WriteLine("[+] Enumerating user accounts:");
-                users();
-            }
-            else if (args.Contains("computers"))
-            {
-                Console.WriteLine("[+] Enumerating computer accounts:");
-                computers();
-            }
-            else
-            {
-                Help();
+                Console.WriteLine("[-] Exception: " + ex.Message);
             }
         }
     }
