@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.DirectoryServices.ActiveDirectory;
-using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Security.Principal;
-using System.Windows.Markup;
 
 namespace SillyEnum
 {
@@ -50,6 +48,26 @@ namespace SillyEnum
                 Console.WriteLine("objectSid: " + sid.Value);
                 Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString() + "\n");
                                                                          
+            }
+        }
+
+        static void spns()
+        {
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+            ds.Filter = "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))";
+
+            results = ds.FindAll();
+
+            foreach (SearchResult sr in results)
+            {
+                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
+                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                Console.WriteLine("objectSid: " + sid.Value);
+                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
+                Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString() + "\n");
             }
         }
 
@@ -101,6 +119,11 @@ namespace SillyEnum
                 {
                     Console.WriteLine("[+] Enumerating computer accounts:");
                     computers();
+                }
+                else if (args.Contains("spns"))
+                {
+                    Console.WriteLine("[+] Enumerating accounts with servicePrincipalName set: ");
+                    spns();
                 }
                 else
                 {
