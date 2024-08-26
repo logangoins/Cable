@@ -13,6 +13,18 @@ namespace SillyEnum
             Console.WriteLine("Enumerate Active Directory in a very silly way\nUsage:\n\tSillyEnum [Options]\nOptions:\n\tdclist - List Domain Controllers and their info\n\tusers - List Domain Users and their info\n\tcomputers - List Domain Computers and their info\n");
         }
 
+        static SearchResultCollection Query(string query)
+        {
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+            ds.Filter = query;
+
+            results = ds.FindAll();
+            return results;
+        }
+
         static void dclist()
         {
             Domain domain = Domain.GetCurrentDomain();
@@ -28,14 +40,8 @@ namespace SillyEnum
 
         static void users()
         {
-            SearchResultCollection results;
+            SearchResultCollection results = Query("(&(ObjectCategory = person)(ObjectClass = user))");
             
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-            ds.Filter = "(&(ObjectCategory=person)(ObjectClass=user))";
-
-            results = ds.FindAll();
-
             if (results.Count == 0)
             {
                 Console.WriteLine("No users found");
@@ -53,13 +59,14 @@ namespace SillyEnum
 
         static void spns()
         {
-            SearchResultCollection results;
+           
+            SearchResultCollection results = Query("(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
 
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-            ds.Filter = "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))";
-
-            results = ds.FindAll();
+            if (results.Count == 0)
+            {
+                Console.WriteLine("No spns found");
+                System.Environment.Exit(0);
+            }
 
             foreach (SearchResult sr in results)
             {
@@ -73,13 +80,8 @@ namespace SillyEnum
 
         static void computers()
         {
-            SearchResultCollection results;
             
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-            ds.Filter = "(ObjectClass=computer)";
-
-            results = ds.FindAll();
+            SearchResultCollection results = Query("(ObjectClass=computer)");
 
             if (results.Count == 0)
             {
