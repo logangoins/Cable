@@ -31,10 +31,9 @@ namespace SillyEnum
         static void users()
         {
             SearchResultCollection results;
-            DirectorySearcher ds = null;
-
+            
             DirectoryEntry de = new DirectoryEntry();
-            ds = new DirectorySearcher(de);
+            DirectorySearcher ds = new DirectorySearcher(de);
             ds.Filter = "(&(ObjectCategory=person)(ObjectClass=user))";
 
             results = ds.FindAll();
@@ -50,29 +49,57 @@ namespace SillyEnum
                 SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
                 Console.WriteLine("objectSid: " + sid.Value);
                 Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString() + "\n");
-
-                                                           
+                                                                         
             }
+        }
+
+        static void computers()
+        {
+            SearchResultCollection results;
+            
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+            ds.Filter = "(ObjectClass=computer)";
+
+            results = ds.FindAll();
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine("No computers found");
+                System.Environment.Exit(0);
+            }
+
+            foreach (SearchResult sr in results)
+            {
+                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
+                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                Console.WriteLine("objectSid: " + sid.Value);
+                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString() + "\n");
+            }
+                                  
         }
 
         static void Main(string[] args)
         {
-            if (args.Length > 0)
+           
+            if (args.Length > 1)
             {
-                if (args.Contains("--help") || args.Contains("-h"))
-                {
-                    Help();
-                }
-                else if (args.Contains("dclist"))
-                {
-                    Console.WriteLine("[+] Enumerating Domain Controllers:");
-                    dclist();
-                }
-                else if (args.Contains("users"))
-                {
-                    Console.WriteLine("[+] Enumerating user accounts:");
-                    users();
-                }
+                Console.WriteLine("Please only supply a single option");
+            }
+            else if (args.Contains("dclist"))
+            {
+                Console.WriteLine("[+] Enumerating Domain Controllers:");
+                dclist();
+            }
+            else if (args.Contains("users"))
+            {
+                Console.WriteLine("[+] Enumerating user accounts:");
+                users();
+            }
+            else if (args.Contains("computers"))
+            {
+                Console.WriteLine("[+] Enumerating computer accounts:");
+                computers();
             }
             else
             {
