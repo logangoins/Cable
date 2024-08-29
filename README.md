@@ -1,5 +1,5 @@
 # Sillyware
-Random AD Tools I terribly write. I AM reinventing the wheel on this one.
+Random Active Directory techniques I recreate. I AM reinventing the wheel on this one.
 
 ## SillyRoast
 ```
