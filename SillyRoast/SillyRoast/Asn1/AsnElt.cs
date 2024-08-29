@@ -1,4 +1,6 @@
-﻿using System;
+// Taken from https://github.com/GhostPack/Rubeus/blob/master/Rubeus/Asn1/AsnElt.cs
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
