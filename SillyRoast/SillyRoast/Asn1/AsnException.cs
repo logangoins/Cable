@@ -1,4 +1,6 @@
-﻿using System;
+// Taken from https://github.com/GhostPack/Rubeus/blob/master/Rubeus/Asn1/AsnException.cs
+
+using System;
 using System.IO;
 
 namespace Asn1
