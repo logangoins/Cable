@@ -3,6 +3,7 @@ using System.Linq;
 using System.DirectoryServices.ActiveDirectory;
 using System.DirectoryServices;
 using System.Security.Principal;
+using System.Net;
 
 namespace SillyEnum
 {
@@ -10,8 +11,21 @@ namespace SillyEnum
     {
         static void Help()
         {
-            Console.WriteLine("Enumerate Active Directory in a very silly way\nUsage:\n\tSillyEnum [Options]\nOptions:\n\tdclist - List Domain Controllers and their info\n\tusers - List Domain Users and their info\n\tcomputers - List Domain Computers and their info\n\tspns - Enumerate accounts with servicePrincipalName set\n");
+            string helptext =
+                "\nEnumerate LDAP in a very silly way\n" +
+                "\nUsage:\n" +
+                "\tSillyEnum.exe [Options]\n" +
+                "Options:\n" +
+                "\tusers: Enumerate user objects\n" +
+                "\tcomputers: Enumerate computer objects\n" +
+                "\tspns: Enumerate objects with servicePrincipalName set\n" +
+                "\tdclist: Enumerate domain controller objects\n" +
+                "\tadmins: Enumerate accounts with adminCount set to 1\n";
+
+
+            Console.WriteLine(helptext);
         }
+
         static SearchResultCollection Query(string query)
         {
             SearchResultCollection results;
@@ -39,7 +53,7 @@ namespace SillyEnum
 
         static void users()
         {
-            SearchResultCollection results = Query("(&(ObjectCategory = person)(ObjectClass = user))");
+            SearchResultCollection results = Query("(&(ObjectCategory=person)(ObjectClass=user))");
             
             if (results.Count == 0)
             {
@@ -75,6 +89,24 @@ namespace SillyEnum
                 Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
                 Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString() + "\n");
             }
+        }
+
+        static void admins()
+        {
+            SearchResultCollection results = Query("(&(admincount=1)(objectClass=user))");
+            if (results.Count == 0)
+            {
+                Console.WriteLine("No admins found");
+                System.Environment.Exit(0);
+            }
+            foreach (SearchResult sr in results)
+            {
+                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
+                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                Console.WriteLine("objectSid: " + sid.Value);
+                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
+            }
+
         }
 
         static void computers()
@@ -125,6 +157,11 @@ namespace SillyEnum
                 {
                     Console.WriteLine("[+] Enumerating accounts with servicePrincipalName set: ");
                     spns();
+                }
+                else if (args.Contains("admins"))
+                {
+                    Console.WriteLine("[+] Enumerating accounts with adminCount set to 1:");
+                    admins();
                 }
                 else
                 {
