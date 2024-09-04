@@ -25,7 +25,9 @@ namespace Cable
                 "\t--computers - Enumerate computer objects\n" +
                 "\t--spns - Enumerate objects with servicePrincipalName set\n" +
                 "\t--dclist - Enumerate domain controller objects\n" +
-                "\t--admins - Enumerate accounts with adminCount set to 1\n";
+                "\t--admins - Enumerate accounts with adminCount set to 1\n" +
+                "\t--constrained - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
+                "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n";
 
             switch (help)
             {
@@ -48,6 +50,8 @@ namespace Cable
             queries.Add("--computers", "(ObjectClass=computer)");
             queries.Add("--spns", "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
             queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
+            queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
+            queries.Add("--constrained", "(msds-allowedtodelegateto=*)");
 
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
@@ -77,9 +81,14 @@ namespace Cable
                 Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
 
                 bool spnInObject = sr.Properties.Contains("serviceprincipalname");
+                bool constrainedInObject = sr.Properties.Contains("msds-allowedtodelegateto");
                 if (spnInObject)
                 {
                     Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
+                }
+                if (constrainedInObject)
+                {
+                    Console.WriteLine("msDs-AllowedToDelegateTo: " + sr.Properties["msds-allowedtodelegateto"][0].ToString());
                 }
 
             }
