@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.DirectoryServices;
-
-
 using Asn1;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
@@ -18,7 +12,20 @@ namespace Cable
 
         static void Help()
         {
-            Console.WriteLine("Help menu");
+            string helptext =
+
+                "Cable.exe [Module] [Options]\n" +
+                "Modules:\n" +
+                "enum [options] - Enumerate LDAP\n" +
+                "\tOptions:\n" +
+                "\t-users - Enumerate user objects\n" +
+                "\t-computers - Enumerate computer objects\n" +
+                "\t-spns - Enumerate objects with servicePrincipalName set\n" +
+                "\t-dclist - Enumerate domain controller objects\n" +
+                "\t-admins - Enumerate accounts with adminCount set to 1\n" +
+                "kerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n";
+           
+            Console.WriteLine(helptext);
         }
 
         static SearchResultCollection Query(string query)
@@ -234,27 +241,34 @@ namespace Cable
 
                     else if (args[0] == "enum")
                     {
-                        switch (args[1])
+                        if (args.Length > 1)
                         {
-                            case "-users":
-                                users();
-                                break;
-                            case "-computers":
-                                computers();
-                                break;
-                            case "-dclist":
-                                dclist();
-                                break;
-                            case "-spns":
-                                spns();
-                                break;
-                            case "-admins":
-                                admins();
-                                break;
-                            default:
-                                Help();
-                                break;
+                            switch (args[1])
+                            {
+                                case "-users":
+                                    users();
+                                    break;
+                                case "-computers":
+                                    computers();
+                                    break;
+                                case "-dclist":
+                                    dclist();
+                                    break;
+                                case "-spns":
+                                    spns();
+                                    break;
+                                case "-admins":
+                                    admins();
+                                    break;
+                                default:
+                                    Help();
+                                    break;
 
+                            }
+                        }
+                        else
+                        {
+                            Help();
                         }
                     }
 
