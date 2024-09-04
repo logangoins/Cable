@@ -36,7 +36,7 @@ namespace Cable
                     Console.WriteLine(enumhelptext);
                     break;
             }
-            
+
         }
 
         static void Enum(string type)
@@ -98,8 +98,8 @@ namespace Cable
                 Console.WriteLine("IP: " + controller.IPAddress);
                 Console.WriteLine("Version: " + controller.OSVersion + "\n");
             }
-        } 
-        
+        }
+
         static string[] GetSPNs()
         {
             SearchResultCollection results;
