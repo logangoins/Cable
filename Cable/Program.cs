@@ -17,7 +17,8 @@ namespace Cable
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tenum [options] - Enumerate LDAP\n" +
-                "\tkerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n";
+                "\tkerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n" +
+                "\tdclist - List Domain Controllers in the current Domain\n";
 
             string enumhelptext =
                 "Options:\n" +
@@ -225,7 +226,6 @@ namespace Cable
 
                     }
 
-
                     else if (args[0] == "enum")
                     {
                         if (args.Length > 1)
@@ -235,8 +235,14 @@ namespace Cable
                         else
                         {
                             Console.WriteLine("[-] Command not recognized\n");
+                            Console.WriteLine("Usage: Cable.exe enum [Options]");
                             Help("enum");
                         }
+                    }
+
+                    else if (args[0] == "dclist")
+                    {
+                        dclist();
                     }
 
                     else
