@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}</ProjectGuid>
+    <ProjectGuid>{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Cable</RootNamespace>
     <AssemblyName>Cable</AssemblyName>
@@ -48,9 +48,10 @@
     <Compile Include="Asn1\AsnElt.cs" />
     <Compile Include="Asn1\AsnException.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

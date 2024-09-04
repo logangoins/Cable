@@ -10,34 +10,81 @@ namespace Cable
     internal class Program
     {
 
-        static void Help()
+        static void Help(string help)
         {
-            string helptext =
+            string modhelptext =
 
-                "Cable.exe [Module] [Options]\n" +
+                "Cable.exe [Module]\n" +
                 "Modules:\n" +
-                "enum [options] - Enumerate LDAP\n" +
-                "\tOptions:\n" +
-                "\t-users - Enumerate user objects\n" +
-                "\t-computers - Enumerate computer objects\n" +
-                "\t-spns - Enumerate objects with servicePrincipalName set\n" +
-                "\t-dclist - Enumerate domain controller objects\n" +
-                "\t-admins - Enumerate accounts with adminCount set to 1\n" +
-                "kerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n";
-           
-            Console.WriteLine(helptext);
+                "\tenum [options] - Enumerate LDAP\n" +
+                "\tkerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n";
+
+            string enumhelptext =
+                "Options:\n" +
+                "\t--users - Enumerate user objects\n" +
+                "\t--computers - Enumerate computer objects\n" +
+                "\t--spns - Enumerate objects with servicePrincipalName set\n" +
+                "\t--dclist - Enumerate domain controller objects\n" +
+                "\t--admins - Enumerate accounts with adminCount set to 1\n";
+
+            switch (help)
+            {
+                case "mod":
+                    Console.WriteLine(modhelptext);
+                    break;
+                case "enum":
+                    Console.WriteLine(enumhelptext);
+                    break;
+            }
+            
         }
 
-        static SearchResultCollection Query(string query)
+        static void Enum(string type)
         {
             SearchResultCollection results;
 
+            Dictionary<string, string> queries = new Dictionary<string, string>();
+            queries.Add("--users", "(&(ObjectCategory=person)(ObjectClass=user))");
+            queries.Add("--computers", "(ObjectClass=computer)");
+            queries.Add("--spns", "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
+            queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
+
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
+            string query = "";
+            bool t = queries.TryGetValue(type, out query);
+            if (!t)
+            {
+                Console.WriteLine("[-] Command not recognized\n");
+                Help("enum");
+                System.Environment.Exit(1);
+            }
             ds.Filter = query;
 
             results = ds.FindAll();
-            return results;
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine("[-] No objects found");
+                System.Environment.Exit(0);
+            }
+
+            foreach (SearchResult sr in results)
+            {
+                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
+                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                Console.WriteLine("objectSid: " + sid.Value);
+                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
+
+                bool spnInObject = sr.Properties.Contains("serviceprincipalname");
+                if (spnInObject)
+                {
+                    Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
+                }
+
+            }
+
+
         }
 
         static void dclist()
@@ -51,86 +98,8 @@ namespace Cable
                 Console.WriteLine("IP: " + controller.IPAddress);
                 Console.WriteLine("Version: " + controller.OSVersion + "\n");
             }
-        }
-
-        static void users()
-        {
-            SearchResultCollection results = Query("(&(ObjectCategory=person)(ObjectClass=user))");
-
-            if (results.Count == 0)
-            {
-                Console.WriteLine("No users found");
-                System.Environment.Exit(0);
-            }
-            foreach (SearchResult sr in results)
-            {
-                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                Console.WriteLine("objectSid: " + sid.Value);
-                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString() + "\n");
-
-            }
-        }
-
-        static void spns()
-        {
-
-            SearchResultCollection results = Query("(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
-
-            if (results.Count == 0)
-            {
-                Console.WriteLine("No spns found");
-                System.Environment.Exit(0);
-            }
-
-            foreach (SearchResult sr in results)
-            {
-                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                Console.WriteLine("objectSid: " + sid.Value);
-                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
-                Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString() + "\n");
-            }
-        }
-
-        static void admins()
-        {
-            SearchResultCollection results = Query("(&(admincount=1)(objectClass=user))");
-            if (results.Count == 0)
-            {
-                Console.WriteLine("No admins found");
-                System.Environment.Exit(0);
-            }
-            foreach (SearchResult sr in results)
-            {
-                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                Console.WriteLine("objectSid: " + sid.Value);
-                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
-            }
-
-        }
-
-        static void computers()
-        {
-
-            SearchResultCollection results = Query("(ObjectClass=computer)");
-
-            if (results.Count == 0)
-            {
-                Console.WriteLine("No computers found");
-                System.Environment.Exit(0);
-            }
-
-            foreach (SearchResult sr in results)
-            {
-                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                Console.WriteLine("objectSid: " + sid.Value);
-                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString() + "\n");
-            }
-
-        }
+        } 
+        
         static string[] GetSPNs()
         {
             SearchResultCollection results;
@@ -243,46 +212,29 @@ namespace Cable
                     {
                         if (args.Length > 1)
                         {
-                            switch (args[1])
-                            {
-                                case "-users":
-                                    users();
-                                    break;
-                                case "-computers":
-                                    computers();
-                                    break;
-                                case "-dclist":
-                                    dclist();
-                                    break;
-                                case "-spns":
-                                    spns();
-                                    break;
-                                case "-admins":
-                                    admins();
-                                    break;
-                                default:
-                                    Help();
-                                    break;
-
-                            }
+                            Enum(args[1]);
                         }
                         else
                         {
-                            Help();
+                            Console.WriteLine("[-] Command not recognized\n");
+                            Help("enum");
                         }
                     }
 
                     else
                     {
-                        Help();
+                        Console.WriteLine("[-] Command not recognized\n");
+                        Help("mod");
                     }
                 }
                 else
                 {
-                    Help();
+                    Help("mod");
                 }
             }
-            catch (Exception e) 
+
+
+            catch (Exception e)
             {
                 Console.WriteLine("[-] Exception: " + e.ToString());
             }

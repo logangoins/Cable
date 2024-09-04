@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cable", "Cable\Cable.csproj", "{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cable", "Cable\Cable.csproj", "{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{54D42AF6-387F-4DBD-ADB2-BE0EA016B27F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B2AE2B-7FD3-4C36-B825-1594752B1D7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9337EA2A-80F2-44E0-AC19-0F0F4CCF5C6D}
+		SolutionGuid = {DF4F0479-C2F0-42FD-B785-D608CE1F39B7}
 	EndGlobalSection
 EndGlobal
