@@ -203,10 +203,19 @@ namespace Cable
                 {
                     if (args[0] == "kerberoast")
                     {
-                        string[] spns = GetSPNs();
-                        Kerberoast(spns);
+                        if (args.Length > 1)
+                        {
+                            string[] spn = { args[1] };
+                            Kerberoast(spn);
+                        }
+                        else
+                        {
+                            string[] spns = GetSPNs();
+                            Kerberoast(spns);
+                        }
 
                     }
+
 
                     else if (args[0] == "enum")
                     {
