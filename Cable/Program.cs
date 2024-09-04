@@ -94,7 +94,6 @@ namespace Cable
 
             }
 
-
         }
 
         static void dclist()
@@ -234,7 +233,6 @@ namespace Cable
                         }
                         else
                         {
-                            Console.WriteLine("[-] Command not recognized\n");
                             Console.WriteLine("Usage: Cable.exe enum [Options]");
                             Help("enum");
                         }
