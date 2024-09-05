@@ -28,4 +28,5 @@ Options:
 ![image](https://github.com/user-attachments/assets/f897cc60-5abc-4018-b2f8-bbd9789242fa)
 
 ## TODO
-- Custom query filters
+- Custom query filters for enum
+- Writing & reading RBCD
