@@ -17,7 +17,7 @@ namespace Cable
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tenum [options] - Enumerate LDAP\n" +
-                "\tkerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything\n" +
+                "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n";
 
             string enumhelptext =
