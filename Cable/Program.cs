@@ -28,7 +28,8 @@ namespace Cable
                 "\t--dclist - Enumerate domain controller objects\n" +
                 "\t--admins - Enumerate accounts with adminCount set to 1\n" +
                 "\t--constrained - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
-                "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n";
+                "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
+                "\t--rbcd - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set";
 
             switch (help)
             {
@@ -42,7 +43,7 @@ namespace Cable
 
         }
 
-        static void Enum(string type)
+        static void Enum(string type, string[] args)
         {
             SearchResultCollection results;
 
@@ -53,16 +54,24 @@ namespace Cable
             queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
             queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
             queries.Add("--constrained", "(msds-allowedtodelegateto=*)");
+            queries.Add("--rbcd", "(msds-allowedtoactonbehalfofotheridentity=*)");
 
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
             string query = "";
-            bool t = queries.TryGetValue(type, out query);
-            if (!t)
+            if (type == "--filter")
             {
-                Console.WriteLine("[-] Command not recognized\n");
-                Help("enum");
-                System.Environment.Exit(1);
+                query = args[2];
+            }
+            else
+            {
+                bool t = queries.TryGetValue(type, out query);
+                if (!t)
+                {
+                    Console.WriteLine("[-] Command not recognized\n");
+                    Help("enum");
+                    System.Environment.Exit(1);
+                }
             }
             ds.Filter = query;
 
@@ -83,6 +92,7 @@ namespace Cable
 
                 bool spnInObject = sr.Properties.Contains("serviceprincipalname");
                 bool constrainedInObject = sr.Properties.Contains("msds-allowedtodelegateto");
+                bool rbcdInObject = sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity");
                 if (spnInObject)
                 {
                     Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
@@ -91,11 +101,15 @@ namespace Cable
                 {
                     Console.WriteLine("msDs-AllowedToDelegateTo: " + sr.Properties["msds-allowedtodelegateto"][0].ToString());
                 }
+                if (rbcdInObject)
+                {
+                    Console.WriteLine("msDs-AllowedToActOnBehalfOfOtherIdentity: " + sr.Properties["msds-allowedtoactonbehalfofotheridentity"][0].ToString());
+                }
+
 
             }
 
         }
-
         static void dclist()
         {
             Domain domain = Domain.GetCurrentDomain();
@@ -229,7 +243,7 @@ namespace Cable
                     {
                         if (args.Length > 1)
                         {
-                            Enum(args[1]);
+                            Enum(args[1], args);
                         }
                         else
                         {
