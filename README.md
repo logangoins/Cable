@@ -30,3 +30,4 @@ Options:
 ## TODO
 - Custom query filters for enum
 - Writing & reading RBCD
+- Enumerate trust relationships
