@@ -5,6 +5,7 @@ using Asn1;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Security.AccessControl;
+using System.Data;
 
 namespace Cable
 {
@@ -77,6 +78,26 @@ namespace Cable
             return account;
         }
 
+        static void ADCSLookup()
+        {
+            DirectoryEntry de = new DirectoryEntry("LDAP://RootDSE");
+            String context = de.Properties["configurationNamingContext"].Value.ToString();
+
+            string sbase = "CN=Certificate Templates,CN=Public Key Services,CN=Services," + context;
+
+            DirectoryEntry newDe = new DirectoryEntry("LDAP://" + sbase);
+            DirectorySearcher ds = new DirectorySearcher(newDe);
+
+            ds.Filter = "(objectCategory=pKICertificateTemplate)";
+            SearchResultCollection results = ds.FindAll();
+
+            foreach(SearchResult sr in results)
+            {
+                Console.WriteLine("name: " + sr.Properties["name"][0].ToString());
+                Console.WriteLine(
+            }
+        }
+
         static string accountToSidLookup(string account)
         {
             SearchResultCollection results;
@@ -141,36 +162,29 @@ namespace Cable
 
             foreach (SearchResult sr in results)
             {
-                
-                bool samAccountNameInObject = sr.Properties.Contains("samaccountname");
-                bool spnInObject = sr.Properties.Contains("serviceprincipalname");
-                bool constrainedInObject = sr.Properties.Contains("msds-allowedtodelegateto");
-                bool rbcdInObject = sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity");
-                bool objectSidInObject = sr.Properties.Contains("objectSid");
-                bool distinguishedNameInObject = sr.Properties.Contains("distinguishedname");
-
-                if (samAccountNameInObject)
+  
+                if (sr.Properties.Contains("samaccountname"))
                 {
                     Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
                 }
-                if (objectSidInObject)
+                if (sr.Properties.Contains("objectSid"))
                 {
                     SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
                     Console.WriteLine("objectSid: " + sid.Value);
                 }
-                if (distinguishedNameInObject)
+                if (sr.Properties.Contains("distinguishedname"))
                 {
                     Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
                 }
-                if (spnInObject)
+                if (sr.Properties.Contains("serviceprincipalname"))
                 {
                     Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
                 }
-                if (constrainedInObject)
+                if (sr.Properties.Contains("msds-allowedtodelegateto"))
                 {
                     Console.WriteLine("msDs-AllowedToDelegateTo: " + sr.Properties["msds-allowedtodelegateto"][0].ToString());
                 }
-                if (rbcdInObject)
+                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
                 {
                     Console.Write("msDs-AllowedToActOnBehalfOfOtherIdentity: ");
                     RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties["msDS-AllowedToActOnBehalfOfOtherIdentity"][0], 0);
@@ -395,6 +409,11 @@ namespace Cable
                             Kerberoast(spns);
                         }
 
+                    }
+
+                    else if (args[0] == "templates")
+                    {
+                        ADCSLookup();
                     }
 
                     else if (args[0] == "rbcd")
