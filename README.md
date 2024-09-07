@@ -14,11 +14,14 @@ Modules:
 Options:
         --users - Enumerate user objects
         --computers - Enumerate computer objects
+        --groups - Enumerate group objects
+        --gpos - Enumerate Group Policy objects
         --spns - Enumerate objects with servicePrincipalName set
         --dclist - Enumerate domain controller objects
         --admins - Enumerate accounts with adminCount set to 1
         --constrained - Enumerate accounts with msDs-AllowedToDelegateTo set
         --unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
+        --rbcd - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
 ```
 
 ### RBCD Module Options
