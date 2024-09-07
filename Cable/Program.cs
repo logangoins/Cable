@@ -94,7 +94,6 @@ namespace Cable
             foreach(SearchResult sr in results)
             {
                 Console.WriteLine("name: " + sr.Properties["name"][0].ToString());
-                Console.WriteLine(
             }
         }
 
