@@ -7,6 +7,7 @@ Modules:
         enum [options] - Enumerate LDAP
         kerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything
         dclist - List Domain Controllers in the current Domain
+        rbcd [options] - Read or write msDs-AllowedToActOnBehalfOfOtherIdentity on a target account
 ```
 ### Enum Module Options
 ```
