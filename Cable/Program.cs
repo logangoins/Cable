@@ -21,7 +21,8 @@ namespace Cable
                 "\tenum [options] - Enumerate LDAP\n" +
                 "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n" +
-                "\trbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n";
+                "\trbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
+                "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest";
 
             string enumhelptext =
                 "Options:\n" +
@@ -263,13 +264,22 @@ namespace Cable
         {
             Forest forest = Forest.GetCurrentForest();
             TrustRelationshipInformationCollection trusts = forest.GetAllTrustRelationships();
-            foreach (TrustRelationshipInformation trust in trusts)
-            {
-                Console.WriteLine("Source: " + trust.SourceName);
-                Console.WriteLine("Target: " + trust.TargetName);
-                Console.WriteLine("Direction: " + trust.TrustDirection);
-                Console.WriteLine("Trust Type: " + trust.TrustType);
 
+            if (trusts.Count > 0)
+            {
+
+                foreach (TrustRelationshipInformation trust in trusts)
+                {
+                    Console.WriteLine("Source: " + trust.SourceName);
+                    Console.WriteLine("Target: " + trust.TargetName);
+                    Console.WriteLine("Direction: " + trust.TrustDirection);
+                    Console.WriteLine("Trust Type: " + trust.TrustType);
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("[-] No Domain Trusts found");
             }
 
         }
@@ -461,6 +471,11 @@ namespace Cable
                     else if (args[0] == "dclist")
                     {
                         dclist();
+                    }
+
+                    else if (args[0] == "trusts")
+                    {
+                        enumTrusts();
                     }
 
                     else
