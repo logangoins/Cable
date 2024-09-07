@@ -6,6 +6,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Data;
+using System.Security.Cryptography;
 
 namespace Cable
 {
@@ -107,6 +108,18 @@ namespace Cable
                 if (sr.Properties.Contains("mspki-certificate-name-flag"))
                 {
                     Console.WriteLine((Cabnums.msPKICertificateNameFlag)Convert.ToInt32(sr.Properties["mspki-certificate-name-flag"][0].ToString()));
+                }
+
+                if (sr.Properties.Contains("pKIExtendedKeyUsage"))
+                {
+                    var EKUs = sr.Properties["pKIExtendedKeyUsage"];
+                    if (EKUs.Count > 0)
+                    {
+                        for (int e = 0; e < EKUs.Count; e++)
+                        {
+                            Console.WriteLine(new Oid(sr.Properties["pKIExtendedKeyUsage"][e].ToString()).FriendlyName);
+                        }
+                    }
                 }
                 Console.Write("\n");
             }
