@@ -21,7 +21,8 @@ namespace Cable
                 "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n" +
                 "\trbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
-                "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest";
+                "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest\n" +
+                "\ttemplates - Enumerate Active Directory Certificate Services (ADCS) Templates";
 
             string enumhelptext =
                 "Options:\n" +
@@ -93,7 +94,21 @@ namespace Cable
 
             foreach(SearchResult sr in results)
             {
-                Console.WriteLine("name: " + sr.Properties["name"][0].ToString());
+                if (sr.Properties.Contains("name"))
+                {
+                    Console.WriteLine("Template: " + sr.Properties["name"][0].ToString());
+                    Console.WriteLine("=======================================");
+                }
+                if (sr.Properties.Contains("mspki-enrollment-flag"))
+                {
+                    Console.WriteLine((Cabnums.msPKIEnrollmentFlag)Convert.ToInt32(sr.Properties["mspki-enrollment-flag"][0].ToString()));
+                }
+            
+                if (sr.Properties.Contains("mspki-certificate-name-flag"))
+                {
+                    Console.WriteLine((Cabnums.msPKICertificateNameFlag)Convert.ToInt32(sr.Properties["mspki-certificate-name-flag"][0].ToString()));
+                }
+                Console.Write("\n");
             }
         }
 

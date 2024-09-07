@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Asn1\AsnElt.cs" />
     <Compile Include="Asn1\AsnException.cs" />
+    <Compile Include="Cabnums.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
