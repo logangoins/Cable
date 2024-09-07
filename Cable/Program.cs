@@ -352,7 +352,7 @@ namespace Cable
 
                         if(delegate_from == "" || delegate_to == "" || operation == "")
                         {
-                            Console.WriteLine("[-] You must specify all the parameters required for RBCD operations");
+                            Console.WriteLine("[-] You must specify all the parameters required for RBCD operations\n");
                             Help("rbcd");
                         }
 
