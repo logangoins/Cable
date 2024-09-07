@@ -3,7 +3,6 @@ Simple Active Directory enumeration and exploitation tool.
 
 ## Usage
 ```
-Cable.exe [Module]
 Modules:
         enum [options] - Enumerate LDAP
         kerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything
@@ -11,7 +10,6 @@ Modules:
 ```
 ### Enum Module Options
 ```
-Usage: Cable.exe enum [Options]
 Options:
         --users - Enumerate user objects
         --computers - Enumerate computer objects
@@ -22,12 +20,21 @@ Options:
         --unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
 ```
 
+### RBCD Module Options
+```
+Options:
+        --delegate-to - Target account to delegate access to
+        --delegate-from - Controller account to delegate from
+        --write - Operation
+```
+
 ## Showcase
 ![image](https://github.com/user-attachments/assets/7f4c072f-4f9a-49ba-ab1a-5eceba5056df)
 
 ![image](https://github.com/user-attachments/assets/f897cc60-5abc-4018-b2f8-bbd9789242fa)
 
+![image](https://github.com/user-attachments/assets/33b0ff6a-55b7-4da3-a6a3-b167bc4f7757)
+
+
 ## TODO
-- Custom query filters for enum
-- Writing & reading RBCD
 - Enumerate trust relationships
