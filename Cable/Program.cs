@@ -21,7 +21,7 @@ namespace Cable
                 "\tenum [options] - Enumerate LDAP\n" +
                 "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n" +
-                "\trbcd - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n";
+                "\trbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n";
 
             string enumhelptext =
                 "Options:\n" +
