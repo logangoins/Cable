@@ -38,7 +38,8 @@ namespace Cable
                 "Options:\n" +
                 "\t--delegate-to <account> - Target account to delegate access to\n" +
                 "\t--delegate-from <account> - Controller account to delegate from\n" +
-                "\t--write - Operation\n";
+                "\t--write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
+                "\t--remove - Operation to remove msDs-AllowedToActOnBehalfOfOtherIdentity";
 
             switch (help)
             {
