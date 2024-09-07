@@ -5,8 +5,6 @@ using Asn1;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Security.AccessControl;
-using System.Net;
-using System.Security.Cryptography;
 
 namespace Cable
 {
