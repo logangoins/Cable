@@ -80,7 +80,7 @@ namespace Cable
             return account;
         }
 
-        static void ADCSLookup()
+        static void templateLookup()
         {
             DirectoryEntry de = new DirectoryEntry("LDAP://RootDSE");
             String context = de.Properties["configurationNamingContext"].Value.ToString();
@@ -440,7 +440,7 @@ namespace Cable
 
                     else if (args[0] == "templates")
                     {
-                        ADCSLookup();
+                        templateLookup();
                     }
 
                     else if (args[0] == "rbcd")
