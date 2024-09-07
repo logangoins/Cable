@@ -27,6 +27,8 @@ namespace Cable
                 "Options:\n" +
                 "\t--users - Enumerate user objects\n" +
                 "\t--computers - Enumerate computer objects\n" +
+                "\t--groups - Enumerate group objects\n" +
+                "\t--gpos - Enumerate Group Policy objects\n" +
                 "\t--spns - Enumerate objects with servicePrincipalName set\n" +
                 "\t--dclist - Enumerate domain controller objects\n" +
                 "\t--admins - Enumerate accounts with adminCount set to 1\n" +
@@ -104,6 +106,8 @@ namespace Cable
             Dictionary<string, string> queries = new Dictionary<string, string>();
             queries.Add("--users", "(&(ObjectCategory=person)(ObjectClass=user))");
             queries.Add("--computers", "(ObjectClass=computer)");
+            queries.Add("--groups", "(ObjectCategory=group)");
+            queries.Add("--gpos", "(ObjectClass=groupPolicyContainer)");
             queries.Add("--spns", "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
             queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
             queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
@@ -138,14 +142,27 @@ namespace Cable
 
             foreach (SearchResult sr in results)
             {
-                Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                Console.WriteLine("objectSid: " + sid.Value);
-                Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
-
+                
+                bool samAccountNameInObject = sr.Properties.Contains("samaccountname");
                 bool spnInObject = sr.Properties.Contains("serviceprincipalname");
                 bool constrainedInObject = sr.Properties.Contains("msds-allowedtodelegateto");
                 bool rbcdInObject = sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity");
+                bool objectSidInObject = sr.Properties.Contains("objectSid");
+                bool distinguishedNameInObject = sr.Properties.Contains("distinguishedname");
+
+                if (samAccountNameInObject)
+                {
+                    Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
+                }
+                if (objectSidInObject)
+                {
+                    SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
+                    Console.WriteLine("objectSid: " + sid.Value);
+                }
+                if (distinguishedNameInObject)
+                {
+                    Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
+                }
                 if (spnInObject)
                 {
                     Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
@@ -240,6 +257,21 @@ namespace Cable
                 Console.WriteLine("IP: " + controller.IPAddress);
                 Console.WriteLine("Version: " + controller.OSVersion + "\n");
             }
+        }
+
+        static void enumTrusts()
+        {
+            Forest forest = Forest.GetCurrentForest();
+            TrustRelationshipInformationCollection trusts = forest.GetAllTrustRelationships();
+            foreach (TrustRelationshipInformation trust in trusts)
+            {
+                Console.WriteLine("Source: " + trust.SourceName);
+                Console.WriteLine("Target: " + trust.TargetName);
+                Console.WriteLine("Direction: " + trust.TrustDirection);
+                Console.WriteLine("Trust Type: " + trust.TrustType);
+
+            }
+
         }
 
         static string[] GetSPNs()
