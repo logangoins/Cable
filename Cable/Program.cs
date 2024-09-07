@@ -199,6 +199,34 @@ namespace Cable
                 }
             }
         }
+
+        static void FlushRBCD(string account)
+        {
+            SearchResultCollection results;
+
+            DirectoryEntry de = new DirectoryEntry();
+            DirectorySearcher ds = new DirectorySearcher(de);
+
+            string query = "(samaccountname=" + account + ")";
+            ds.Filter = query;
+            results = ds.FindAll();
+
+            foreach (SearchResult sr in results)
+            {
+                if (sr.Properties.Contains("msDs-AllowedToActOnBehalfOfOtherIdentity"))
+                {
+                    DirectoryEntry mde = sr.GetDirectoryEntry();
+                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
+                    mde.CommitChanges();
+                    Console.WriteLine("[+] SID cleared to msDs-AllowedToActOnBehalfOfOtherIdentity");
+                }
+                else
+                {
+                    Console.WriteLine("[-] Account does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
+                    return;
+                }
+            }
+        }
         
         static void dclist()
         {
@@ -347,18 +375,39 @@ namespace Cable
                                 case "--write":
                                     operation = "write";
                                     break;
+                                case "--remove":
+                                    operation = "remove";
+                                    break;
                             }
                         }
-
-                        if(delegate_from == "" || delegate_to == "" || operation == "")
-                        {
-                            Console.WriteLine("[-] You must specify all the parameters required for RBCD operations\n");
-                            Help("rbcd");
-                        }
-
+                                                
                         if (operation == "write")
                         {
-                            WriteRBCD(delegate_to, delegate_from);
+                            if (delegate_from == "" || delegate_to == "" || operation == "")
+                            {
+                                Console.WriteLine("[-] You must specify all the parameters required for an RBCD write\n ");
+                                Help("rbcd");
+                            }
+                            else
+                            {
+                                WriteRBCD(delegate_to, delegate_from);
+                            }
+                        }
+                        else if (operation == "remove"){
+                            if (delegate_to == "" || operation == "")
+                            {
+                                Console.WriteLine("[-] You must specify all the parameters required for an RBCD remove\n ");
+                                Help("rbcd");
+                            }
+                            else
+                            {
+                                FlushRBCD(delegate_to);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("[-] Please specify all parameters");
+                            Help("rbcd");
                         }
                         
                     }
