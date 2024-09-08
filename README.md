@@ -5,9 +5,11 @@ Simple Active Directory enumeration and exploitation tool.
 ```
 Modules:
         enum [options] - Enumerate LDAP
-        kerberoast [account] - Kerberoast a potentially supplied account, otherwise roast everything
+        kerberoast [account] - Kerberoast a potentially supplied account, or everything
         dclist - List Domain Controllers in the current Domain
-        rbcd [options] - Read or write msDs-AllowedToActOnBehalfOfOtherIdentity on a target account
+        rbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
+        trusts - Enumerate Active Directory Domain Trusts in the current Forest
+        templates - Enumerate Active Directory Certificate Services (ADCS) Templates
 ```
 ### Enum Module Options
 ```
@@ -39,6 +41,6 @@ Options:
 
 ![image](https://github.com/user-attachments/assets/33b0ff6a-55b7-4da3-a6a3-b167bc4f7757)
 
+![image](https://github.com/user-attachments/assets/54dbff3c-5309-4922-9453-a89a4530999d)
 
-## TODO
-- Enumerate trust relationships
+
