@@ -29,9 +29,10 @@ Options:
 ### RBCD Module Options
 ```
 Options:
-        --delegate-to - Target account to delegate access to
-        --delegate-from - Controller account to delegate from
-        --write - Operation
+        --delegate-to <account> - Target account to delegate access to
+        --delegate-from <account> - Controller account to delegate from
+        --write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
+        --remove - Operation to remove msDs-AllowedToActOnBehalfOfOtherIdentity
 ```
 
 ## Showcase
