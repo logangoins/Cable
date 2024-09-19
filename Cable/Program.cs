@@ -17,10 +17,10 @@ namespace Cable
             string modhelptext =
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
-                "\tenum [options] - Enumerate LDAP\n" +
+                "\tenum [Options] - Enumerate LDAP\n" +
                 "\tkerberoast <account> - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist - List Domain Controllers in the current Domain\n" +
-                "\trbcd [options] - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
+                "\trbcd [Options] - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest\n" +
                 "\ttemplates - Enumerate Active Directory Certificate Services (ADCS) Templates";
 
