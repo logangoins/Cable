@@ -270,7 +270,7 @@ namespace Cable
                         }
                         else
                         {
-                            Console.WriteLine("[!] Please specify all parameters");
+                            Console.WriteLine("Usage: Cable.exe rbcd [Options]");
                             Help("rbcd");
                         }
                         
