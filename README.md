@@ -3,9 +3,10 @@ Simple Active Directory enumeration and exploitation tool.
 
 ## Usage
 ```
+Cable.exe [Module]
 Modules:
         enum [options] - Enumerate LDAP
-        kerberoast [account] - Kerberoast a potentially supplied account, or everything
+        kerberoast <account> - Kerberoast a potentially supplied account, or everything
         dclist - List Domain Controllers in the current Domain
         rbcd [options] - Write or read the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
         trusts - Enumerate Active Directory Domain Trusts in the current Forest
@@ -29,10 +30,10 @@ Options:
 ### RBCD Module Options
 ```
 Options:
+        --write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
         --delegate-to <account> - Target account to delegate access to
         --delegate-from <account> - Controller account to delegate from
-        --write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
-        --remove - Operation to remove msDs-AllowedToActOnBehalfOfOtherIdentity
+        --flush <account> - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account
 ```
 
 ## Showcase
