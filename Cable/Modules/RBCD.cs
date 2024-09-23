@@ -118,7 +118,7 @@ namespace Cable.Modules
                     DirectoryEntry mde = sr.GetDirectoryEntry();
                     mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
                     mde.CommitChanges();
-                    Console.WriteLine("[+] SID cleared to msDs-AllowedToActOnBehalfOfOtherIdentity");
+                    Console.WriteLine("[+] SID cleared from msDs-AllowedToActOnBehalfOfOtherIdentity");
                 }
                 else
                 {
