@@ -47,7 +47,7 @@
   <ItemGroup>
     <Compile Include="Asn1\AsnElt.cs" />
     <Compile Include="Asn1\AsnException.cs" />
-    <Compile Include="Cabnums.cs" />
+    <Compile Include="Modules\Cabnums.cs" />
     <Compile Include="Modules\ADCS.cs" />
     <Compile Include="Modules\Kerberoast.cs" />
     <Compile Include="Modules\RBCD.cs" />

@@ -4,7 +4,6 @@ using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Principal;
 using System.Security.AccessControl;
-using System.Security.Cryptography;
 using Cable.Modules;
 
 namespace Cable
