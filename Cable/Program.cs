@@ -20,16 +20,18 @@ namespace Cable
 
             string enumhelptext =
                 "Options:\n" +
-                "\t--users         - Enumerate user objects\n" +
-                "\t--computers     - Enumerate computer objects\n" +
-                "\t--groups        - Enumerate group objects\n" +
-                "\t--gpos          - Enumerate Group Policy objects\n" +
-                "\t--spns          - Enumerate objects with servicePrincipalName set\n" +
-                "\t--asrep         - Enumerate accounts that do not require Kerberos pre-authentication\n" +
-                "\t--admins        - Enumerate accounts with adminCount set to 1\n" +
-                "\t--constrained   - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
-                "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
-                "\t--rbcd          - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set";
+                "\t--users          - Enumerate user objects\n" +
+                "\t--computers      - Enumerate computer objects\n" +
+                "\t--groups         - Enumerate group objects\n" +
+                "\t--gpos           - Enumerate Group Policy objects\n" +
+                "\t--spns           - Enumerate objects with servicePrincipalName set\n" +
+                "\t--asrep          - Enumerate accounts that do not require Kerberos pre-authentication\n" +
+                "\t--admins         - Enumerate accounts with adminCount set to 1\n" +
+                "\t--constrained    - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
+                "\t--unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
+                "\t--rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
+                "\t--filter <query> - Enumerate objects with a custom set query";
+
 
             string rbcdhelptext =
                 "Options:\n" +
