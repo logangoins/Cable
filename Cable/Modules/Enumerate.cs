@@ -41,7 +41,7 @@ namespace Cable.Modules
                 if (!t)
                 {
                     Console.WriteLine("[!] Command not recognized\n");
-                    Program.Help("enum");
+                    Program.Help();
                     System.Environment.Exit(1);
                 }
             }

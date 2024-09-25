@@ -6,9 +6,9 @@ namespace Cable
     internal class Program
     {
 
-        public static void Help(string help)
+        public static void Help()
         {
-            string modhelptext =
+            string help =
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tenum [Options]       - Enumerate LDAP\n" +
@@ -16,10 +16,10 @@ namespace Cable
                 "\tdclist               - List Domain Controllers in the current Domain\n" +
                 "\trbcd [Options]       - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\ttrusts               - Enumerate Active Directory Domain Trusts in the current Forest\n" +
-                "\ttemplates            - Enumerate Active Directory Certificate Services (ADCS) Templates";
+                "\ttemplates            - Enumerate Active Directory Certificate Services (ADCS) Templates\n\n" +
 
-            string enumhelptext =
-                "Options:\n" +
+                "Module Options\n" +
+                "enum:\n" +
                 "\t--users          - Enumerate user objects\n" +
                 "\t--computers      - Enumerate computer objects\n" +
                 "\t--groups         - Enumerate group objects\n" +
@@ -30,33 +30,22 @@ namespace Cable
                 "\t--constrained    - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
                 "\t--unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
                 "\t--rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
-                "\t--filter <query> - Enumerate objects with a custom set query";
+                "\t--filter <query> - Enumerate objects with a custom set query\n\n" +
 
-
-            string rbcdhelptext =
-                "Options:\n" +
+                "rbcd:\n" +
                 "\t--write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
                 "\t--delegate-to <account>   - Target account to delegate access to\n" +
                 "\t--delegate-from <account> - Controlled account to delegate from\n" +
-                "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account";
+                "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n";
 
-            switch (help)
-            {
-                case "mod":
-                    Console.WriteLine(modhelptext);
-                    break;
-                case "enum":
-                    Console.WriteLine(enumhelptext);
-                    break;
-                case "rbcd":
-                    Console.WriteLine(rbcdhelptext);
-                    break;
-            }
+            Console.WriteLine(help);
 
         }
 
         static void Main(string[] args)
         {
+
+            Console.WriteLine(" ________  ________  ________  ___       _______      \r\n|\\   ____\\|\\   __  \\|\\   __  \\|\\  \\     |\\  ___ \\     \r\n\\ \\  \\___|\\ \\  \\|\\  \\ \\  \\|\\ /\\ \\  \\    \\ \\   __/|    \r\n \\ \\  \\    \\ \\   __  \\ \\   __  \\ \\  \\    \\ \\  \\_|/__  \r\n  \\ \\  \\____\\ \\  \\ \\  \\ \\  \\|\\  \\ \\  \\____\\ \\  \\_|\\ \\ \r\n   \\ \\_______\\ \\__\\ \\__\\ \\_______\\ \\_______\\ \\_______\\\r\n    \\|_______|\\|__|\\|__|\\|_______|\\|_______|\\|_______|\r\n");
 
             try
             {
@@ -129,7 +118,7 @@ namespace Cable
                             if (delegate_from == "" || delegate_to == "" || operation == "")
                             {
                                 Console.WriteLine("[!] You must specify all the parameters required for an RBCD write\n ");
-                                Help("rbcd");
+                                Help();
                             }
                             else
                             {
@@ -140,7 +129,7 @@ namespace Cable
                             if (account == "" || operation == "")
                             {
                                 Console.WriteLine("[!] You must specify all the parameters required for an RBCD flush\n ");
-                                Help("rbcd");
+                                Help();
                             }
                             else
                             {
@@ -149,8 +138,7 @@ namespace Cable
                         }
                         else
                         {
-                            Console.WriteLine("Usage: Cable.exe rbcd [Options]");
-                            Help("rbcd");
+                            Help();
                         }
                         
                     }
@@ -163,8 +151,7 @@ namespace Cable
                         }
                         else
                         {
-                            Console.WriteLine("Usage: Cable.exe enum [Options]");
-                            Help("enum");
+                            Help();
                         }
                     }
 
@@ -181,12 +168,12 @@ namespace Cable
                     else
                     {
                         Console.WriteLine("[!] Command not recognized\n");
-                        Help("mod");
+                        Help();
                     }
                 }
                 else
                 {
-                    Help("mod");
+                    Help();
                 }
             }
 
