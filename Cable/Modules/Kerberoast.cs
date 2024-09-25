@@ -8,6 +8,8 @@ namespace Cable.Modules
 {
     public class Kerberoast
     {
+
+        // Inspired by https://github.com/GhostPack/Rubeus/blob/master/Rubeus/lib/Roast.cs
         public static bool Roast(string[] spns)
         {
             string domain = Domain.GetComputerDomain().ToString();
@@ -89,7 +91,7 @@ namespace Cable.Modules
             var spns = new List<string>();
             if (results.Count == 0)
             {
-                Console.WriteLine("[-] No Kerberoastable accounts found :(");
+                Console.WriteLine("[-] No Kerberoastable accounts found");
                 System.Environment.Exit(0);
             }
             foreach (SearchResult sr in results)
