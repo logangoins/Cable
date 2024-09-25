@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Cable
 {
-    internal class Cabnums
+    internal class hCable
     {
+
         [Flags]
         public enum msPKICertificateNameFlag : UInt32
         {
@@ -53,7 +55,6 @@ namespace Cable
             ISSUANCE_POLICIES_FROM_REQUEST = 0x00020000,
             SKIP_AUTO_RENEWAL = 0x00040000
         }
-
 
     }
 }

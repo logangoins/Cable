@@ -32,12 +32,12 @@ namespace Cable.Modules
                 }
                 if (sr.Properties.Contains("mspki-enrollment-flag"))
                 {
-                    Console.WriteLine((Cabnums.msPKIEnrollmentFlag)Convert.ToInt32(sr.Properties["mspki-enrollment-flag"][0].ToString()));
+                    Console.WriteLine((hCable.msPKIEnrollmentFlag)Convert.ToInt32(sr.Properties["mspki-enrollment-flag"][0].ToString()));
                 }
 
                 if (sr.Properties.Contains("mspki-certificate-name-flag"))
                 {
-                    Console.WriteLine((Cabnums.msPKICertificateNameFlag)Convert.ToInt32(sr.Properties["mspki-certificate-name-flag"][0].ToString()));
+                    Console.WriteLine((hCable.msPKICertificateNameFlag)Convert.ToInt32(sr.Properties["mspki-certificate-name-flag"][0].ToString()));
                 }
 
                 if (sr.Properties.Contains("pKIExtendedKeyUsage"))
