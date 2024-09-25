@@ -12,6 +12,14 @@ Cable has a few primary features currently, with high hopes at feature expansion
 
 ## Usage
 ```
+ ________  ________  ________  ___       _______
+|\   ____\|\   __  \|\   __  \|\  \     |\  ___ \
+\ \  \___|\ \  \|\  \ \  \|\ /\ \  \    \ \   __/|
+ \ \  \    \ \   __  \ \   __  \ \  \    \ \  \_|/__
+  \ \  \____\ \  \ \  \ \  \|\  \ \  \____\ \  \_|\ \
+   \ \_______\ \__\ \__\ \_______\ \_______\ \_______\
+    \|_______|\|__|\|__|\|_______|\|_______|\|_______|
+
 Cable.exe [Module]
 Modules:
         enum [Options]       - Enumerate LDAP
@@ -20,12 +28,9 @@ Modules:
         rbcd [Options]       - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
         trusts               - Enumerate Active Directory Domain Trusts in the current Forest
         templates            - Enumerate Active Directory Certificate Services (ADCS) Templates
-```
 
-### Enum Module Options
-```
-Usage: Cable.exe enum [Options]
-Options:
+Module Options
+enum:
         --users          - Enumerate user objects
         --computers      - Enumerate computer objects
         --groups         - Enumerate group objects
@@ -37,15 +42,11 @@ Options:
         --unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
         --rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
         --filter <query> - Enumerate objects with a custom set query
-```
 
-### RBCD Module Options
-```
-Usage: Cable.exe rbcd [Options]
-Options:
+rbcd:
         --write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
         --delegate-to <account>   - Target account to delegate access to
-        --delegate-from <account> - Controller account to delegate from
+        --delegate-from <account> - Controlled account to delegate from
         --flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account
 ```
 
