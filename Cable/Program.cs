@@ -11,32 +11,32 @@ namespace Cable
             string modhelptext =
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
-                "\tenum [Options] - Enumerate LDAP\n" +
+                "\tenum [Options]       - Enumerate LDAP\n" +
                 "\tkerberoast <account> - Kerberoast a potentially supplied account, or everything\n" +
-                "\tdclist - List Domain Controllers in the current Domain\n" +
-                "\trbcd [Options] - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
-                "\ttrusts - Enumerate Active Directory Domain Trusts in the current Forest\n" +
-                "\ttemplates - Enumerate Active Directory Certificate Services (ADCS) Templates";
+                "\tdclist               - List Domain Controllers in the current Domain\n" +
+                "\trbcd [Options]       - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
+                "\ttrusts               - Enumerate Active Directory Domain Trusts in the current Forest\n" +
+                "\ttemplates            - Enumerate Active Directory Certificate Services (ADCS) Templates";
 
             string enumhelptext =
                 "Options:\n" +
-                "\t--users - Enumerate user objects\n" +
-                "\t--computers - Enumerate computer objects\n" +
-                "\t--groups - Enumerate group objects\n" +
-                "\t--gpos - Enumerate Group Policy objects\n" +
-                "\t--spns - Enumerate objects with servicePrincipalName set\n" +
-                "\t--asrep - Enumerate accounts that do not require Kerberos pre-authentication\n" +
-                "\t--admins - Enumerate accounts with adminCount set to 1\n" +
-                "\t--constrained - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
+                "\t--users         - Enumerate user objects\n" +
+                "\t--computers     - Enumerate computer objects\n" +
+                "\t--groups        - Enumerate group objects\n" +
+                "\t--gpos          - Enumerate Group Policy objects\n" +
+                "\t--spns          - Enumerate objects with servicePrincipalName set\n" +
+                "\t--asrep         - Enumerate accounts that do not require Kerberos pre-authentication\n" +
+                "\t--admins        - Enumerate accounts with adminCount set to 1\n" +
+                "\t--constrained   - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
                 "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
-                "\t--rbcd - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set";
+                "\t--rbcd          - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set";
 
             string rbcdhelptext =
                 "Options:\n" +
-                "\t--write - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
-                "\t--delegate-to <account> - Target account to delegate access to\n" +
+                "\t--write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
+                "\t--delegate-to <account>   - Target account to delegate access to\n" +
                 "\t--delegate-from <account> - Controller account to delegate from\n" +
-                "\t--flush <account> - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account";
+                "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account";
 
             switch (help)
             {
