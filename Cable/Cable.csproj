@@ -45,8 +45,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Asn1\AsnElt.cs" />
-    <Compile Include="Asn1\AsnException.cs" />
+    <Compile Include="Modules\Asn1\AsnElt.cs" />
+    <Compile Include="Modules\Asn1\AsnException.cs" />
+    <Compile Include="Modules\Enumerate.cs" />
     <Compile Include="Modules\hCable.cs" />
     <Compile Include="Modules\ADCS.cs" />
     <Compile Include="Modules\Kerberoast.cs" />
