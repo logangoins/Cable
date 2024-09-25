@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.DirectoryServices;
-using System.DirectoryServices.ActiveDirectory;
-using System.Security.Principal;
-using System.Security.AccessControl;
 using Cable.Modules;
 
 namespace Cable
@@ -11,7 +6,7 @@ namespace Cable
     internal class Program
     {
 
-        static void Help(string help)
+        public static void Help(string help)
         {
             string modhelptext =
                 "Cable.exe [Module]\n" +
@@ -30,7 +25,7 @@ namespace Cable
                 "\t--groups - Enumerate group objects\n" +
                 "\t--gpos - Enumerate Group Policy objects\n" +
                 "\t--spns - Enumerate objects with servicePrincipalName set\n" +
-                "\t--dclist - Enumerate domain controller objects\n" +
+                "\t--asrep - Enumerate accounts that do not require Kerberos pre-authentication\n" +
                 "\t--admins - Enumerate accounts with adminCount set to 1\n" +
                 "\t--constrained - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
                 "\t--unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
@@ -54,123 +49,6 @@ namespace Cable
                 case "rbcd":
                     Console.WriteLine(rbcdhelptext);
                     break;
-            }
-
-        }
-
-        static void Enum(string type, string[] args)
-        {
-            SearchResultCollection results;
-
-            Dictionary<string, string> queries = new Dictionary<string, string>();
-            queries.Add("--users", "(&(ObjectCategory=person)(ObjectClass=user))");
-            queries.Add("--computers", "(ObjectClass=computer)");
-            queries.Add("--groups", "(ObjectCategory=group)");
-            queries.Add("--gpos", "(ObjectClass=groupPolicyContainer)");
-            queries.Add("--spns", "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
-            queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
-            queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
-            queries.Add("--constrained", "(msds-allowedtodelegateto=*)");
-            queries.Add("--rbcd", "(msds-allowedtoactonbehalfofotheridentity=*)");
-
-            DirectoryEntry de = new DirectoryEntry();
-            DirectorySearcher ds = new DirectorySearcher(de);
-            string query = "";
-            if (type == "--filter")
-            {
-                query = args[2];
-            }
-            else
-            {
-                bool t = queries.TryGetValue(type, out query);
-                if (!t)
-                {
-                    Console.WriteLine("[!] Command not recognized\n");
-                    Help("enum");
-                    System.Environment.Exit(1);
-                }
-            }
-            ds.Filter = query;
-            results = ds.FindAll();
-
-            if (results.Count == 0)
-            {
-                Console.WriteLine("[!] No objects found");
-                System.Environment.Exit(0);
-            }
-
-            foreach (SearchResult sr in results)
-            {
-  
-                if (sr.Properties.Contains("samaccountname"))
-                {
-                    Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                }
-                if (sr.Properties.Contains("objectSid"))
-                {
-                    SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                    Console.WriteLine("objectSid: " + sid.Value);
-                }
-                if (sr.Properties.Contains("distinguishedname"))
-                {
-                    Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
-                }
-                if (sr.Properties.Contains("serviceprincipalname"))
-                {
-                    Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
-                }
-                if (sr.Properties.Contains("msds-allowedtodelegateto"))
-                {
-                    Console.WriteLine("msDs-AllowedToDelegateTo: " + sr.Properties["msds-allowedtodelegateto"][0].ToString());
-                }
-                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
-                {
-                    Console.Write("msDs-AllowedToActOnBehalfOfOtherIdentity: ");
-                    RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties["msDS-AllowedToActOnBehalfOfOtherIdentity"][0], 0);
-                    foreach (CommonAce ace in rsd.DiscretionaryAcl)
-                    {
-                        Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
-                    }
-                                        
-                }
-
-            }
-
-        }
-
-        static void dclist()
-        {
-            Domain domain = Domain.GetCurrentDomain();
-            DomainControllerCollection dcs = domain.FindAllDomainControllers();
-            foreach (DomainController controller in dcs)
-            {
-                Console.WriteLine("\n" + controller.Name + "\n===================");
-                Console.WriteLine("Forest: " + controller.Forest);
-                Console.WriteLine("IP: " + controller.IPAddress);
-                Console.WriteLine("Version: " + controller.OSVersion + "\n");
-            }
-        }
-
-        static void enumTrusts()
-        {
-            Forest forest = Forest.GetCurrentForest();
-            TrustRelationshipInformationCollection trusts = forest.GetAllTrustRelationships();
-
-            if (trusts.Count > 0)
-            {
-
-                foreach (TrustRelationshipInformation trust in trusts)
-                {
-                    Console.WriteLine("Source: " + trust.SourceName);
-                    Console.WriteLine("Target: " + trust.TargetName);
-                    Console.WriteLine("Direction: " + trust.TrustDirection);
-                    Console.WriteLine("Trust Type: " + trust.TrustType);
-
-                }
-            }
-            else
-            {
-                Console.WriteLine("[!] No Domain Trusts found");
             }
 
         }
@@ -279,7 +157,7 @@ namespace Cable
                     {
                         if (args.Length > 1)
                         {
-                            Enum(args[1], args);
+                            Enumerate.Enum(args[1], args);
                         }
                         else
                         {
@@ -290,12 +168,12 @@ namespace Cable
 
                     else if (args[0] == "dclist")
                     {
-                        dclist();
+                        Enumerate.Dclist();
                     }
 
                     else if (args[0] == "trusts")
                     {
-                        enumTrusts();
+                        Enumerate.enumTrusts();
                     }
 
                     else
