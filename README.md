@@ -1,5 +1,14 @@
 # Cable
-Simple Active Directory enumeration and exploitation tool.
+Cable is a simple post-exploitation tool used for enumeration and further exploitation of Active Directory environments. This tool was primarily created to learn more about .NET offensive development in an Active Directory context, while hoping to expand my current knowledge and understanding of Active Directory focusing offensive security.
+
+Cable has a few primary features currently, with high hopes at feature expansion: 
+- The ability to request service tickets from accounts registered with a `servicePrincipalName` and format them as part of a Kerberoasting attack. 
+- The ability to write and remove the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
+- Enumeration of Active Directory Certificate Services (ADCS) certificate templates
+- Enumeration of domain trusts configured in the current forest
+- Enumeration of domain controllers in the current domain
+- General LDAP enumeration with both pre-created queries and the ability to specify custom queries.
+
 
 ## Usage
 ```
@@ -17,17 +26,17 @@ Modules:
 ```
 Usage: Cable.exe enum [Options]
 Options:
-        --users         - Enumerate user objects
-        --computers     - Enumerate computer objects
-        --groups        - Enumerate group objects
-        --gpos          - Enumerate Group Policy objects
-        --spns          - Enumerate objects with servicePrincipalName set
-        --asrep         - Enumerate accounts that do not require Kerberos pre-authentication
-        --admins        - Enumerate accounts with adminCount set to 1
-        --constrained   - Enumerate accounts with msDs-AllowedToDelegateTo set
-        --unconstrained - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
-        --rbcd          - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
-
+        --users          - Enumerate user objects
+        --computers      - Enumerate computer objects
+        --groups         - Enumerate group objects
+        --gpos           - Enumerate Group Policy objects
+        --spns           - Enumerate objects with servicePrincipalName set
+        --asrep          - Enumerate accounts that do not require Kerberos pre-authentication
+        --admins         - Enumerate accounts with adminCount set to 1
+        --constrained    - Enumerate accounts with msDs-AllowedToDelegateTo set
+        --unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
+        --rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
+        --filter <query> - Enumerate objects with a custom set query
 ```
 
 ### RBCD Module Options
