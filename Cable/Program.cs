@@ -30,7 +30,7 @@ namespace Cable
                 "\t--constrained    - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
                 "\t--unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
                 "\t--rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
-                "\t--filter <query> - Enumerate objects with a custom set query\n\n" +
+                "\t--query <query>  - Enumerate objects with a custom query\n\n" +
 
                 "rbcd:\n" +
                 "\t--write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
@@ -46,6 +46,8 @@ namespace Cable
         {
 
             Console.WriteLine(" ________  ________  ________  ___       _______      \r\n|\\   ____\\|\\   __  \\|\\   __  \\|\\  \\     |\\  ___ \\     \r\n\\ \\  \\___|\\ \\  \\|\\  \\ \\  \\|\\ /\\ \\  \\    \\ \\   __/|    \r\n \\ \\  \\    \\ \\   __  \\ \\   __  \\ \\  \\    \\ \\  \\_|/__  \r\n  \\ \\  \\____\\ \\  \\ \\  \\ \\  \\|\\  \\ \\  \\____\\ \\  \\_|\\ \\ \r\n   \\ \\_______\\ \\__\\ \\__\\ \\_______\\ \\_______\\ \\_______\\\r\n    \\|_______|\\|__|\\|__|\\|_______|\\|_______|\\|_______|\r\n");
+            Console.WriteLine("Active Directory Enumeration and Exploitation tool");
+            Console.WriteLine("Author: Logan Goins\n");
 
             try
             {

@@ -31,7 +31,7 @@ namespace Cable.Modules
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
             string query = "";
-            if (type == "--filter")
+            if (type == "--query")
             {
                 query = args[2];
             }
