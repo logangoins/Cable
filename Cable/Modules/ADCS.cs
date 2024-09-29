@@ -23,6 +23,11 @@ namespace Cable.Modules
             ds.Filter = "(objectCategory=pKICertificateTemplate)";
             SearchResultCollection results = ds.FindAll();
 
+            if (results.Count == 0)
+            {
+                Console.WriteLine("[!] No certificate templates found");
+            }
+
             foreach (SearchResult sr in results)
             {
                 if (sr.Properties.Contains("name"))
