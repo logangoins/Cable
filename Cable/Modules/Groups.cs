@@ -51,10 +51,17 @@ namespace Cable.Modules
 
             Console.WriteLine("[+] Adding user " + user + " to group " + group);
 
-            groupPrincipal.Members.Add(ctx, IdentityType.SamAccountName, user);
-            groupPrincipal.Save();
+            try
+            {
+                groupPrincipal.Members.Add(ctx, IdentityType.SamAccountName, user);
+                groupPrincipal.Save();
 
-            Console.WriteLine("[+] Successfully added");
+                Console.WriteLine("[+] Successfully added");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Could not add user to group: " + ex.Message);
+            }
 
         }
 
@@ -71,10 +78,17 @@ namespace Cable.Modules
 
             Console.WriteLine("[+] Removing user " + user + " from group " + group);
 
-            groupPrincipal.Members.Remove(ctx, IdentityType.SamAccountName, user);
-            groupPrincipal.Save();
+            try
+            {
+                groupPrincipal.Members.Remove(ctx, IdentityType.SamAccountName, user);
+                groupPrincipal.Save();
 
-            Console.WriteLine("[+] Successfully removed");
+                Console.WriteLine("[+] Successfully removed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Could not remove user from group: " + ex.Message);
+            }
         }
 
     }
