@@ -33,8 +33,8 @@ Modules:
         rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
         trusts                    - Enumerate Active Directory Domain Trusts in the current Forest
         templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
-        user                      - Preform general operations on user accounts
-        group                     - Enumerate group membership, add, and remove users from groups
+        user [Options]            - Preform general operations on user accounts
+        group [Options]           - Enumerate group membership, add, and remove users from groups
 
 Module Options
 enum:
@@ -66,6 +66,7 @@ group:
         --group <group>           - The group used for an operation specified
         --add <account>           - Add a specified account to the group selected
         --remove <account>        - Remove a specified account from the group selected
+
 
 ```
 
