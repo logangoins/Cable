@@ -109,12 +109,13 @@ namespace Cable.Modules
         public static void enumTrusts()
         {
             Forest forest = Forest.GetCurrentForest();
-            TrustRelationshipInformationCollection trusts = forest.GetAllTrustRelationships();
+            TrustRelationshipInformationCollection ftrusts = forest.GetAllTrustRelationships();
 
-            if (trusts.Count > 0)
+            Console.WriteLine("[+] Enumerating Forest trusts");
+            if (ftrusts.Count > 0)
             {
 
-                foreach (TrustRelationshipInformation trust in trusts)
+                foreach (TrustRelationshipInformation trust in ftrusts)
                 {
                     Console.WriteLine("Source: " + trust.SourceName);
                     Console.WriteLine("Target: " + trust.TargetName);
@@ -125,7 +126,27 @@ namespace Cable.Modules
             }
             else
             {
-                Console.WriteLine("[!] No Domain Trusts found");
+                Console.WriteLine("[!] No Forest trusts found");
+            }
+
+            Domain domain = Domain.GetCurrentDomain();
+            TrustRelationshipInformationCollection dtrusts = domain.GetAllTrustRelationships();
+
+            Console.WriteLine("[+] Enumerating Domain trusts");
+            if(dtrusts.Count > 0)
+            {
+                foreach (TrustRelationshipInformation trust in dtrusts)
+                {
+                    Console.WriteLine("Source: " + trust.SourceName);
+                    Console.WriteLine("Target: " + trust.TargetName);
+                    Console.WriteLine("Direction: " + trust.TrustDirection);
+                    Console.WriteLine("Trust Type: " + trust.TrustType);
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("[!] No Domain trusts found");
             }
 
         }
