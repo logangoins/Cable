@@ -4,11 +4,14 @@ Cable is a simple post-exploitation tool used for enumeration and further exploi
 Cable has a few primary features currently, with high hopes at feature expansion: 
 - The ability to request service tickets from accounts registered with a `servicePrincipalName` and format them as part of a Kerberoasting attack. 
 - The ability to write and remove the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
-- Enumeration of Active Directory Certificate Services (ADCS) certificate templates
-- Enumeration of domain trusts configured in the current forest
-- Enumeration of domain controllers in the current domain
+- Enumeration of Active Directory Certificate Services (ADCS) certificate templates.
+- Enumeration of domain trusts configured in the current forest.
+- Enumeration of domain controllers in the current domain.
 - General LDAP enumeration with both pre-created queries and the ability to specify custom queries.
-
+- The ability to perform password changes.
+- The ability to set the `servicePrincipalName` attribute on an object, making it kerberoastable.
+- Enumeration of group membership.
+- The ability to add and remove accounts from groups.
 
 ## Usage
 ```
@@ -20,34 +23,51 @@ Cable has a few primary features currently, with high hopes at feature expansion
    \ \_______\ \__\ \__\ \_______\ \_______\ \_______\
     \|_______|\|__|\|__|\|_______|\|_______|\|_______|
 
+Active Directory Enumeration and Exploitation tool
+
 Cable.exe [Module]
 Modules:
-        enum [Options]       - Enumerate LDAP
-        kerberoast <account> - Kerberoast a potentially supplied account, or everything
-        dclist               - List Domain Controllers in the current Domain
-        rbcd [Options]       - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
-        trusts               - Enumerate Active Directory Domain Trusts in the current Forest
-        templates            - Enumerate Active Directory Certificate Services (ADCS) Templates
+        enum [Options]            - Enumerate LDAP
+        kerberoast <account>      - Kerberoast a potentially supplied account, or everything
+        dclist                    - List Domain Controllers in the current Domain
+        rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
+        trusts                    - Enumerate Active Directory Domain Trusts in the current Forest
+        templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
+        user [Options]            - Preform general operations on user accounts
+        group [Options]           - Enumerate group membership, add, and remove users from groups
 
 Module Options
 enum:
-        --users          - Enumerate user objects
-        --computers      - Enumerate computer objects
-        --groups         - Enumerate group objects
-        --gpos           - Enumerate Group Policy objects
-        --spns           - Enumerate objects with servicePrincipalName set
-        --asrep          - Enumerate accounts that do not require Kerberos pre-authentication
-        --admins         - Enumerate accounts with adminCount set to 1
-        --constrained    - Enumerate accounts with msDs-AllowedToDelegateTo set
-        --unconstrained  - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
-        --rbcd           - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
-        --filter <query> - Enumerate objects with a custom set query
+        --users                   - Enumerate user objects
+        --computers               - Enumerate computer objects
+        --groups                  - Enumerate group objects
+        --gpos                    - Enumerate Group Policy objects
+        --spns                    - Enumerate objects with servicePrincipalName set
+        --asrep                   - Enumerate accounts that do not require Kerberos pre-authentication
+        --admins                  - Enumerate accounts with adminCount set to 1
+        --constrained             - Enumerate accounts with msDs-AllowedToDelegateTo set
+        --unconstrained           - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
+        --rbcd                    - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
+        --query <query>           - Enumerate objects with a custom query
 
 rbcd:
         --write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
         --delegate-to <account>   - Target account to delegate access to
         --delegate-from <account> - Controlled account to delegate from
         --flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account
+
+user:
+        --spn <value>             - Write to an objects servicePrincipalName attribute
+        --user <account>          - Specify user account to preform operations on
+        --password <password>     - Change an accounts password
+
+group:
+        --getmembership           - Operation to get Active Directory group membership
+        --group <group>           - The group used for an operation specified
+        --add <account>           - Add a specified account to the group selected
+        --remove <account>        - Remove a specified account from the group selected
+
+
 ```
 
 
