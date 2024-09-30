@@ -55,6 +55,7 @@
     <Compile Include="Modules\ADCS.cs" />
     <Compile Include="Modules\Kerberoast.cs" />
     <Compile Include="Modules\RBCD.cs" />
+    <Compile Include="Modules\Users.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
