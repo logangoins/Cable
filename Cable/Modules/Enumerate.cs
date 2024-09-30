@@ -140,7 +140,7 @@ namespace Cable.Modules
                     Console.WriteLine("Source: " + trust.SourceName);
                     Console.WriteLine("Target: " + trust.TargetName);
                     Console.WriteLine("Direction: " + trust.TrustDirection);
-                    Console.WriteLine("Trust Type: " + trust.TrustType);
+                    Console.WriteLine("Trust Type: " + trust.TrustType + "\n");
 
                 }
             }
