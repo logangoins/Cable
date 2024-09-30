@@ -96,7 +96,7 @@ namespace Cable.Modules
             }
             foreach (SearchResult sr in results)
             {
-                spns.Add(sr.Properties["name"][0].ToString());
+                spns.Add(sr.Properties["samaccountname"][0].ToString());
             }
 
             return spns.ToArray();
