@@ -39,6 +39,11 @@ namespace Cable.Modules
                 "\t--delegate-from <account> - Controlled account to delegate from\n" +
                 "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n\n" +
                 
+                "user:\n" +
+                "\t--spn <value>             - Write to an objects servicePrincipalName attribute\n" +
+                "\t--user <account>          - Specify user account to preform operations on\n" +
+                "\t--password <password>     - Change an accounts password\n\n" +
+
                 "group:\n" +
                 "\t--getmembership           - Operation to get Active Directory group membership\n" +
                 "\t--group <group>           - The group used for an operation specified\n" +
@@ -57,7 +62,8 @@ namespace Cable.Modules
             "rbcd",
             "trusts",
             "templates",
-            "group"
+            "group",
+            "user"
         };
 
         public static void Parse(string[] args)
@@ -85,8 +91,8 @@ namespace Cable.Modules
                         case "kerberoast":
                             if (args.Length > 1)
                             {
-                                string[] spn = { args[1] };
-                                Kerberoast.Roast(spn);
+                                string[] kspn = { args[1] };
+                                Kerberoast.Roast(kspn);
                             }
                             else
                             {
@@ -172,10 +178,43 @@ namespace Cable.Modules
                         case "templates":
                             ADCS.templateLookup();
                             break;
+                        case "user":
+                            string useroperation = "";
+                            string user = "";
+                            string spn = "";
+                            string password = "";
+                            for (int i = 0; i < args.Length; i++)
+                            {
+                                switch (args[i])
+                                {
+                                    case "--spn":
+                                        spn = args[i + 1];
+                                        useroperation = "setspn";
+                                        break;
+                                    case "--user":
+                                        user = args[i + 1];
+                                        break;
+                                    case "-password":
+                                        password = args[i + 1];
+                                        useroperation = "changepw";
+                                        break;
+                                }
+                            }
+                            if (useroperation == "setspn")
+                            {
+                                if(spn == "")
+                                {
+                                    Console.WriteLine("[!] Please supply a value for the SPN");
+                                    return;
+                                }
+                                Users.setSPN(spn, user);
+                            }
+
+                            break;
                         case "group":
                             string group = "";
                             string groupoperation = "";
-                            string user = "";
+                            string groupuser = "";
                             for (int i = 0; i < args.Length; i++)
                             {
                                 switch (args[i])
@@ -188,11 +227,11 @@ namespace Cable.Modules
                                         break;
                                     case "--add":
                                         groupoperation = "add";
-                                        user = args[i + 1];
+                                        groupuser = args[i + 1];
                                         break;
                                     case "--remove":
                                         groupoperation = "remove";
-                                        user = args[i + 1];
+                                        groupuser = args[i + 1];
                                         break;
                                 }
                             }
@@ -203,7 +242,7 @@ namespace Cable.Modules
                                     Console.WriteLine("[!] Please supply a group");
                                     return;
                                 }
-                                Groups.AddToGroup(user, group);
+                                Groups.AddToGroup(groupuser, group);
                             }
                             else if (groupoperation == "remove")
                             {
@@ -212,7 +251,7 @@ namespace Cable.Modules
                                     Console.WriteLine("[!] Please supply a group");
                                     return;
                                 }
-                                Groups.RemoveFromGroup(user, group);
+                                Groups.RemoveFromGroup(groupuser, group);
                             }
                             else if (groupoperation == "getmem")
                             {
