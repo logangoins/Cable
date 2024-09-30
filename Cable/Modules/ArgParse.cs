@@ -18,8 +18,8 @@ namespace Cable.Modules
                 "\trbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\ttrusts                    - Enumerate Active Directory Domain Trusts in the current Forest\n" +
                 "\ttemplates                 - Enumerate Active Directory Certificate Services (ADCS) Templates\n" +
-                "\tuser                      - Preform general operations on user accounts\n" +
-                "\tgroup                     - Enumerate group membership, add, and remove users from groups\n\n" +
+                "\tuser [Options]            - Preform general operations on user accounts\n" +
+                "\tgroup [Options]           - Enumerate group membership, add, and remove users from groups\n\n" +
 
                 "Module Options\n" +
                 "enum:\n" +
