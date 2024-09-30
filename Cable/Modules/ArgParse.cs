@@ -194,7 +194,7 @@ namespace Cable.Modules
                                     case "--user":
                                         user = args[i + 1];
                                         break;
-                                    case "-password":
+                                    case "--password":
                                         password = args[i + 1];
                                         useroperation = "changepw";
                                         break;
@@ -202,14 +202,22 @@ namespace Cable.Modules
                             }
                             if (useroperation == "setspn")
                             {
-                                if(spn == "")
+                                if(spn == "" || user == "")
                                 {
-                                    Console.WriteLine("[!] Please supply a value for the SPN");
+                                    Console.WriteLine("[!] Please supply a value for the SPN and user account");
                                     return;
                                 }
                                 Users.setSPN(spn, user);
                             }
-
+                            else if (useroperation == "changepw")
+                            {
+                                if(user == "" || password == "")
+                                {
+                                    Console.WriteLine("[!] Please supply a value for the user and password");
+                                    return;
+                                }
+                                Users.changePassword(user, password);
+                            }
                             break;
                         case "group":
                             string group = "";
