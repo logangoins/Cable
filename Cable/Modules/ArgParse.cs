@@ -144,10 +144,10 @@ namespace Cable.Modules
                             Enumerate.Dclist();
                             break;
                         case "rbcd":
-                            string delegate_from = "";
-                            string delegate_to = "";
-                            string account = "";
-                            string write = "";
+                            string delegate_from = null;
+                            string delegate_to = null;
+                            string account = null;
+                            string write = null;
 
                             string[] flags = { "--delegate-from", "--delegate-to", "--flush" };
                             string[] options = { "--write" };
@@ -160,7 +160,7 @@ namespace Cable.Modules
 
                             if (write == "True")
                             {
-                                if (delegate_from == "" || delegate_to == "")
+                                if (delegate_from == null || delegate_to == null)
                                 {
                                     Console.WriteLine("[!] You must specify all the parameters required for an RBCD write ");
                                 }
@@ -169,9 +169,9 @@ namespace Cable.Modules
                                     RBCD.WriteRBCD(delegate_to, delegate_from);
                                 }
                             }
-                            else if (write != "")
+                            else if (write == "False")
                             {
-                                if (account == "")
+                                if (account == null)
                                 {
                                     Console.WriteLine("[!] You must specify all the parameters required for an RBCD flush");
 
