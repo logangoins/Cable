@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 
 namespace Cable.Modules
 {
-    internal class ArgParse
+
+    public class ArgParse
     {
+
         public static void Help()
         {
             string help =
@@ -68,7 +71,42 @@ namespace Cable.Modules
             "user"
         };
 
-        public static void Parse(string[] args)
+        public static Dictionary<string, string> Parse(string[] args, string[] flags, string[] options)
+        {
+            Dictionary<string, string> cmd = new Dictionary<string, string>();
+
+            foreach (string flag in flags)
+            {
+                if (args.Contains(flag))
+                {
+                    try
+                    {
+                        cmd.Add(flag, args[Array.IndexOf(args, flag) + 1]);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("[!] Please supply all the valid options, use \"Cable.exe -h\" for more information");
+                        System.Environment.Exit(1);
+                    }
+                }
+            }
+
+            foreach (string option in options)
+            {
+                if (args.Contains(option))
+                {
+                    cmd.Add(option, "True");
+                }
+                else
+                {
+                    cmd.Add(option, "False");
+                }
+            }
+
+            return cmd;
+        }
+
+        public static void Execute(string[] args)
         {
             if(args.Contains("--help") || args.Contains("-h") || args.Length == 0)
             {
@@ -108,47 +146,21 @@ namespace Cable.Modules
                         case "rbcd":
                             string delegate_from = "";
                             string delegate_to = "";
-                            string rbcdoperation = "";
                             string account = "";
+                            string write = "";
 
-                            for (int i = 0; i < args.Length; i++)
-                            {
-                                switch (args[i])
-                                {
-                                    case "--delegate-to":
-                                        delegate_to = args[i + 1];
-                                        break;
-                                    case "--delegate-from":
-                                        delegate_from = args[i + 1];
-                                        break;
-                                    case "--write":
-                                        rbcdoperation = "write";
-                                        break;
-                                    case "--flush":
-                                        rbcdoperation = "flush";
-                                        if (delegate_to == "" && delegate_from == "")
-                                        {
-                                            if (args.Length > 2)
-                                            {
-                                                account = args[i + 1];
-                                            }
-                                            else
-                                            {
-                                                Console.WriteLine("[!] Error: please supply an account to flush");
-                                            }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("[!] Error: supplied delegate_from or delegate_to with --flush option");
-                                            return;
-                                        }
-                                        break;
-                                }
-                            }
+                            string[] flags = { "--delegate-from", "--delegate-to", "--flush" };
+                            string[] options = { "--write" };
 
-                            if (rbcdoperation == "write")
+                            Dictionary<string, string> cmd = Parse(args, flags, options);
+                            cmd.TryGetValue("--delegate-from", out delegate_from);
+                            cmd.TryGetValue("--delegate-to", out delegate_to);
+                            cmd.TryGetValue("--flush", out account);
+                            cmd.TryGetValue("--write", out write);
+
+                            if (write == "True")
                             {
-                                if (delegate_from == "" || delegate_to == "" || rbcdoperation == "")
+                                if (delegate_from == "" || delegate_to == "")
                                 {
                                     Console.WriteLine("[!] You must specify all the parameters required for an RBCD write ");
                                 }
@@ -157,9 +169,9 @@ namespace Cable.Modules
                                     RBCD.WriteRBCD(delegate_to, delegate_from);
                                 }
                             }
-                            else if (rbcdoperation == "flush")
+                            else if (write != "")
                             {
-                                if (account == "" || rbcdoperation == "")
+                                if (account == "")
                                 {
                                     Console.WriteLine("[!] You must specify all the parameters required for an RBCD flush");
 

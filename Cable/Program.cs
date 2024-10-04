@@ -13,7 +13,7 @@ namespace Cable
 
             try
             {
-                Modules.ArgParse.Parse(args);
+                Modules.ArgParse.Execute(args);
             }
 
             catch (Exception e)
