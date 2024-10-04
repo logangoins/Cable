@@ -108,6 +108,7 @@ namespace Cable.Modules
 
         public static void Execute(string[] args)
         {
+
             if(args.Contains("--help") || args.Contains("-h") || args.Length == 0)
             {
                 Help();
@@ -149,14 +150,14 @@ namespace Cable.Modules
                             string account = null;
                             string write = null;
 
-                            string[] flags = { "--delegate-from", "--delegate-to", "--flush" };
-                            string[] options = { "--write" };
+                            string[] rbcdFlags = { "--delegate-from", "--delegate-to", "--flush" };
+                            string[] rbcdOptions = { "--write" };
 
-                            Dictionary<string, string> cmd = Parse(args, flags, options);
-                            cmd.TryGetValue("--delegate-from", out delegate_from);
-                            cmd.TryGetValue("--delegate-to", out delegate_to);
-                            cmd.TryGetValue("--flush", out account);
-                            cmd.TryGetValue("--write", out write);
+                            Dictionary<string, string> rbcdcmd = Parse(args, rbcdFlags, rbcdOptions);
+                            rbcdcmd.TryGetValue("--delegate-from", out delegate_from);
+                            rbcdcmd.TryGetValue("--delegate-to", out delegate_to);
+                            rbcdcmd.TryGetValue("--flush", out account);
+                            rbcdcmd.TryGetValue("--write", out write);
 
                             if (write == "True")
                             {
@@ -193,39 +194,29 @@ namespace Cable.Modules
                             ADCS.templateLookup();
                             break;
                         case "user":
-                            string useroperation = "";
-                            string user = "";
-                            string spn = "";
-                            string password = "";
-                            for (int i = 0; i < args.Length; i++)
+                            string user = null;
+                            string spn = null;
+                            string password = null;
+
+                            string[] userFlags = { "--spn", "--user", "--password" };
+                            string[] userOptions = { };
+                            Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
+                            usercmd.TryGetValue("--spn", out spn);
+                            usercmd.TryGetValue("--user", out user);
+                            usercmd.TryGetValue("--password", out password);
+
+                            if (spn != null)
                             {
-                                switch (args[i])
-                                {
-                                    case "--spn":
-                                        spn = args[i + 1];
-                                        useroperation = "setspn";
-                                        break;
-                                    case "--user":
-                                        user = args[i + 1];
-                                        break;
-                                    case "--password":
-                                        password = args[i + 1];
-                                        useroperation = "changepw";
-                                        break;
-                                }
-                            }
-                            if (useroperation == "setspn")
-                            {
-                                if(spn == "" || user == "")
+                                if(user == null)
                                 {
                                     Console.WriteLine("[!] Please supply a value for the SPN and user account");
                                     return;
                                 }
                                 Users.setSPN(spn, user);
                             }
-                            else if (useroperation == "changepw")
+                            else if (password != null)
                             {
-                                if(user == "" || password == "")
+                                if(user == null)
                                 {
                                     Console.WriteLine("[!] Please supply a value for the user and password");
                                     return;
@@ -234,55 +225,49 @@ namespace Cable.Modules
                             }
                             break;
                         case "group":
-                            string group = "";
-                            string groupoperation = "";
-                            string groupuser = "";
-                            for (int i = 0; i < args.Length; i++)
+                            string group = null;
+                            string getmem = null;
+                            string add = null;
+                            string remove = null;
+
+                            string[] groupFlags = {"--group", "--add", "--remove" };
+                            string[] groupOptions = { "--getmembership" };
+                            Dictionary<string, string> groupcmd = Parse(args, groupFlags, groupOptions);
+                            groupcmd.TryGetValue("--getmembership", out getmem);
+                            groupcmd.TryGetValue("--group", out group);
+                            groupcmd.TryGetValue("--add", out add);
+                            groupcmd.TryGetValue("--remove", out remove);
+
+                            if (add != null)
                             {
-                                switch (args[i])
-                                {
-                                    case "--getmembership":
-                                        groupoperation = "getmem";
-                                        break;
-                                    case "--group":
-                                        group = args[i + 1];
-                                        break;
-                                    case "--add":
-                                        groupoperation = "add";
-                                        groupuser = args[i + 1];
-                                        break;
-                                    case "--remove":
-                                        groupoperation = "remove";
-                                        groupuser = args[i + 1];
-                                        break;
-                                }
-                            }
-                            if(groupoperation == "add")
-                            {
-                                if (group == "")
+                                if (group == null)
                                 {
                                     Console.WriteLine("[!] Please supply a group");
                                     return;
                                 }
-                                Groups.AddToGroup(groupuser, group);
+                                Groups.AddToGroup(add, group);
                             }
-                            else if (groupoperation == "remove")
+                            else if (remove != null)
                             {
-                                if (group == "")
+                                if (group == null)
                                 {
                                     Console.WriteLine("[!] Please supply a group");
                                     return;
                                 }
-                                Groups.RemoveFromGroup(groupuser, group);
+                                Groups.RemoveFromGroup(remove, group);
                             }
-                            else if (groupoperation == "getmem")
+                            else if (getmem == "True")
                             {
-                                if(group == "")
+                                if(group == null)
                                 {
                                     Console.WriteLine("[!] Please supply a group");
                                     return;
                                 }
                                 Groups.GetGroupMembers(group);
+                            }
+                            else
+                            {
+                                Console.WriteLine("[!] Please specify an action");
                             }
                             break;
 
@@ -294,7 +279,6 @@ namespace Cable.Modules
                 catch (IndexOutOfRangeException)
                 {
                     Console.WriteLine("[!] Command invalid: use \"Cable.exe -h\" for more details");
-                    
                 }
             }
             else
