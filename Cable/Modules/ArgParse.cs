@@ -36,7 +36,8 @@ namespace Cable.Modules
                 "\t--constrained             - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
                 "\t--unconstrained           - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
                 "\t--rbcd                    - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
-                "\t--query <query>           - Enumerate objects with a custom query\n\n" +
+                "\t--query <query>           - Enumerate objects with a custom query\n" +
+                "\t--filter <attr, attr>     - Enumerate objects for specific attributes\n\n" +
 
                 "rbcd:\n" +
                 "\t--write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
