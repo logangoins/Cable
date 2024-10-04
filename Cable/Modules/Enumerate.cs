@@ -12,7 +12,7 @@ namespace Cable.Modules
 {
     public class Enumerate
     {
-        public static void Enum(string type, string[] args)
+        public static void Enum(string type, string query, List<string> attributes)
         {
             SearchResultCollection results;
 
@@ -30,22 +30,21 @@ namespace Cable.Modules
 
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
-            string query = "";
-            if (type == "--query")
+            string q = "";
+            if (type == "query")
             {
-                query = args[2];
+                q = query;
             }
             else
             {
-                bool t = queries.TryGetValue(type, out query);
+                bool t = queries.TryGetValue(type, out q);
                 if (!t)
                 {
                     Console.WriteLine("[!] Command not recognized\n");
-                    ArgParse.Help();
                     System.Environment.Exit(1);
                 }
             }
-            ds.Filter = query;
+            ds.Filter = q;
             results = ds.FindAll();
 
             if (results.Count == 0)
@@ -57,37 +56,30 @@ namespace Cable.Modules
             foreach (SearchResult sr in results)
             {
 
-                if (sr.Properties.Contains("samaccountname"))
+                foreach (string attribute in attributes)
                 {
-                    Console.WriteLine("\nsamAccountName: " + sr.Properties["samaccountname"][0].ToString());
-                }
-                if (sr.Properties.Contains("objectSid"))
-                {
-                    SecurityIdentifier sid = new SecurityIdentifier(sr.Properties["objectSid"][0] as byte[], 0);
-                    Console.WriteLine("objectSid: " + sid.Value);
-                }
-                if (sr.Properties.Contains("distinguishedname"))
-                {
-                    Console.WriteLine("distinguishedName: " + sr.Properties["distinguishedname"][0].ToString());
-                }
-                if (sr.Properties.Contains("serviceprincipalname"))
-                {
-                    Console.WriteLine("servicePrincipalName: " + sr.Properties["serviceprincipalname"][0].ToString());
-                }
-                if (sr.Properties.Contains("msds-allowedtodelegateto"))
-                {
-                    Console.WriteLine("msDs-AllowedToDelegateTo: " + sr.Properties["msds-allowedtodelegateto"][0].ToString());
-                }
-                if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
-                {
-                    Console.Write("msDs-AllowedToActOnBehalfOfOtherIdentity: ");
-                    RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties["msDS-AllowedToActOnBehalfOfOtherIdentity"][0], 0);
-                    foreach (CommonAce ace in rsd.DiscretionaryAcl)
+                    if (sr.Properties.Contains(attribute))
                     {
-                        Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
+                        if (attribute == "objectsid")
+                        {
+                            SecurityIdentifier sid = new SecurityIdentifier(sr.Properties[attribute][0] as byte[], 0);
+                            Console.WriteLine("objectSid: " + sid.Value);
+                        }
+                        else if (attribute == "msds-allowedtoactonbehalfofotheridentity")
+                        {
+                            RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties[attribute][0], 0);
+                            foreach (CommonAce ace in rsd.DiscretionaryAcl)
+                            {
+                                Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine(attribute + ": " + sr.Properties[attribute][0].ToString());
+                        }
                     }
-
                 }
+                Console.Write("\n");
 
             }
 

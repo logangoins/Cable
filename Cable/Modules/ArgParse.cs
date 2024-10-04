@@ -122,7 +122,38 @@ namespace Cable.Modules
                         case "enum":
                             if (args.Length > 1)
                             {
-                                Enumerate.Enum(args[1], args);
+                                string query = null;
+                                string filter = null;
+                                string type = null;
+                                string selection = null;
+                                List<string> attributes = new List<string>() { "samaccountname", "objectsid", "distinguishedname" };
+                                string[] enumFlags = { "--query", "--filter" };
+                                string[] enumOptions = { "--users", "--computers", "--groups", "--gpos", "--spns", "--asrep", "--admins", "--unconstrained", "--constrained", "--rbcd"};
+
+                                Dictionary<string, string> enumcmd = Parse(args, enumFlags, enumOptions);
+                                enumcmd.TryGetValue("--query", out query);
+                                enumcmd.TryGetValue("--filter", out filter);
+                                if(filter != null)
+                                {
+                                    attributes = filter.Split(',').Select(a => a.Trim()).Select(a => a.ToLower()).ToList();
+                                }
+                                if (query != null)
+                                {
+                                    type = "query";
+                                }
+                                else
+                                {
+                                    foreach(string option in enumOptions)
+                                    {
+                                        enumcmd.TryGetValue(option, out selection);
+                                        if(selection == "True")
+                                        {
+                                            type = option;
+                                        }
+                                    }
+                                }
+
+                                Enumerate.Enum(type, query, attributes);
                             }
                             else
                             {
