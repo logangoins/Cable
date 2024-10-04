@@ -2,7 +2,7 @@
 Cable is a simple post-exploitation tool used for enumeration and further exploitation of Active Directory environments. This tool was primarily created to learn more about .NET offensive development in an Active Directory context, while hoping to expand my current knowledge and understanding of Active Directory focused offensive security.
 
 Cable has a few primary features currently, with high hopes at feature expansion: 
-- The ability to request service tickets from accounts registered with a `servicePrincipalName` and format them as part of a Kerberoasting attack. 
+- The ability to request service tickets from accounts registered with a `servicePrincipalName` and place them in a crackable format as part of a Kerberoasting attack. 
 - The ability to write and remove the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
 - Enumeration of Active Directory Certificate Services (ADCS) certificate templates.
 - Enumeration of domain trusts configured in the current forest.
