@@ -49,6 +49,7 @@ enum:
         --unconstrained           - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
         --rbcd                    - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
         --query <query>           - Enumerate objects with a custom query
+        --filter <attr, attr>     - Enumerate objects for specific attributes
 
 rbcd:
         --write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
@@ -66,8 +67,6 @@ group:
         --group <group>           - The group used for an operation specified
         --add <account>           - Add a specified account to the group selected
         --remove <account>        - Remove a specified account from the group selected
-
-
 ```
 
 
