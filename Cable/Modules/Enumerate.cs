@@ -80,7 +80,13 @@ namespace Cable.Modules
                         }
                         else
                         {
-                            Console.WriteLine(attribute + ": " + sr.Properties[attribute][0].ToString());
+                            Console.Write(attribute + ": ");
+                            foreach(var value in sr.Properties[attribute])
+                            {
+                                Console.Write(value.ToString() + " ");
+                            }
+                            Console.Write('\n');
+                            //Console.WriteLine(attribute + ": " + sr.Properties[attribute][0].ToString());
                         }
                     }
                 }
