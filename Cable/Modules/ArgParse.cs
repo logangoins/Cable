@@ -68,6 +68,7 @@ namespace Cable.Modules
             "rbcd",
             "trusts",
             "templates",
+            "ca",
             "group",
             "user"
         };
@@ -224,6 +225,9 @@ namespace Cable.Modules
                             break;
                         case "templates":
                             ADCS.templateLookup();
+                            break;
+                        case "ca":
+                            ADCS.caLookup();
                             break;
                         case "user":
                             string user = null;
