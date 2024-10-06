@@ -86,7 +86,6 @@ namespace Cable.Modules
                                 Console.Write(value.ToString() + " ");
                             }
                             Console.Write('\n');
-                            //Console.WriteLine(attribute + ": " + sr.Properties[attribute][0].ToString());
                         }
                     }
                 }
