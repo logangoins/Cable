@@ -21,7 +21,7 @@ namespace Cable.Modules
             queries.Add("--computers", "(ObjectClass=computer)");
             queries.Add("--groups", "(ObjectCategory=group)");
             queries.Add("--gpos", "(ObjectClass=groupPolicyContainer)");
-            queries.Add("--spns", "(&(serviceprincipalname=*)(!useraccountcontrol:1.2.840.113556.1.4.803:=2))");
+            queries.Add("--spns", "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))");
             queries.Add("--asrep", "(&(userAccountControl:1.2.840.113556.1.4.803:=4194304)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))");
             queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
             queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
@@ -72,6 +72,11 @@ namespace Cable.Modules
                             {
                                 Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
                             }
+                        }
+                        else if (attribute == "useraccountcontrol")
+                        {
+                            Console.Write("userAccountControl: ");
+                            Console.WriteLine((hCable.USER_ACCOUNT_CONTROL)Convert.ToInt32(sr.Properties[attribute][0].ToString()));
                         }
                         else
                         {
