@@ -20,7 +20,7 @@ namespace Cable.Modules
                 "\tdclist                    - List Domain Controllers in the current Domain\n" +
                 "\trbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\ttrusts                    - Enumerate Active Directory Domain Trusts in the current Forest\n" +
-                "\tca                        - Enumerate any active Active Directory Certiifcate Services (ADCS) CA's\n" +
+                "\tca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's\n" +
                 "\ttemplates                 - Enumerate Active Directory Certificate Services (ADCS) Templates\n" +
                 "\tuser [Options]            - Preform general operations on user accounts\n" +
                 "\tgroup [Options]           - Enumerate group membership, add, and remove users from groups\n\n" +
