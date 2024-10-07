@@ -32,6 +32,7 @@ Modules:
         dclist                    - List Domain Controllers in the current Domain
         rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
         trusts                    - Enumerate Active Directory Domain Trusts in the current Forest
+        ca                        - Enumerate any active Active Directory Certiifcate Services (ADCS) CA's
         templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
         user [Options]            - Preform general operations on user accounts
         group [Options]           - Enumerate group membership, add, and remove users from groups
