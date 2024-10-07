@@ -42,6 +42,39 @@ namespace Cable.Modules
             }
         }
 
+        public static void removeSPN(string spn, string user)
+        {
+            try
+            {
+                SearchResultCollection results;
+
+                DirectoryEntry de = new DirectoryEntry();
+                DirectorySearcher ds = new DirectorySearcher(de);
+
+                string query = "(samaccountname=" + user + ")";
+                ds.Filter = query;
+                results = ds.FindAll();
+
+                if (results.Count == 0)
+                {
+                    Console.WriteLine("[!] Cannot find account");
+                    return;
+                }
+
+                foreach (SearchResult sr in results)
+                {
+                    DirectoryEntry mde = sr.GetDirectoryEntry();
+                    mde.Properties["serviceprincipalname"].Remove(spn);
+                    mde.CommitChanges();
+                    Console.WriteLine("[+] SPN removed from " + user);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Failed to remove servicePrincipalName attrbute: " + ex.Message);
+            }
+        }
+
         public static void changePassword(string user, string password)
         {
             try

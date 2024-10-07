@@ -46,7 +46,8 @@ namespace Cable.Modules
                 "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n\n" +
                 
                 "user:\n" +
-                "\t--spn <value>             - Write to an objects servicePrincipalName attribute\n" +
+                "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
+                "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
                 "\t--user <account>          - Specify user account to preform operations on\n" +
                 "\t--password <password>     - Change an accounts password\n\n" +
 
@@ -231,24 +232,38 @@ namespace Cable.Modules
                             break;
                         case "user":
                             string user = null;
-                            string spn = null;
+                            string aspn = null;
+                            string rspn = null;
                             string password = null;
 
-                            string[] userFlags = { "--spn", "--user", "--password" };
+                            string[] userFlags = { "--setspn", "--removespn", "--user", "--password" };
                             string[] userOptions = { };
                             Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
-                            usercmd.TryGetValue("--spn", out spn);
+                            usercmd.TryGetValue("--setspn", out aspn);
+                            usercmd.TryGetValue("--removespn", out rspn);
                             usercmd.TryGetValue("--user", out user);
                             usercmd.TryGetValue("--password", out password);
 
-                            if (spn != null)
+                            if (aspn != null || rspn != null)
                             {
                                 if(user == null)
                                 {
                                     Console.WriteLine("[!] Please supply a value for the SPN and user account");
                                     return;
                                 }
-                                Users.setSPN(spn, user);
+                                if(aspn != null && rspn != null)
+                                {
+                                    Console.WriteLine("[!] Cannot add and remove SPN at the same time");
+                                    return;
+                                }
+                                if (aspn != null)
+                                {
+                                    Users.setSPN(aspn, user);
+                                }
+                                else if (rspn != null)
+                                {
+                                    Users.removeSPN(rspn, user);
+                                }
                             }
                             else if (password != null)
                             {
