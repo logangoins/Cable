@@ -3,13 +3,13 @@ Cable is a simple post-exploitation tool used for enumeration and further exploi
 
 Cable has a few primary features currently, with high hopes at feature expansion: 
 - The ability to request service tickets from accounts registered with a `servicePrincipalName` and place them in a crackable format as part of a Kerberoasting attack. 
-- The ability to write and remove the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
+- The ability to write and remove the value of the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
 - Enumeration of Active Directory Certificate Services (ADCS) certificate templates.
 - Enumeration of domain trusts configured in the current forest.
 - Enumeration of domain controllers in the current domain.
 - General LDAP enumeration with both pre-created queries and the ability to specify custom queries.
 - The ability to perform password changes.
-- The ability to set the `servicePrincipalName` attribute on an object, making it kerberoastable.
+- The ability to set and remove the value of the `servicePrincipalName` attribute on an object, making it kerberoastable and non-kerberoastable respectfully.
 - Enumeration of group membership.
 - The ability to add and remove accounts from groups.
 
@@ -58,7 +58,8 @@ rbcd:
         --flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account
 
 user:
-        --spn <value>             - Write to an objects servicePrincipalName attribute
+        --setspn <value>          - Write to an objects servicePrincipalName attribute
+        --removespn <value>       - Remove a specified value off the servicePrincipalName attribute
         --user <account>          - Specify user account to preform operations on
         --password <password>     - Change an accounts password
 
