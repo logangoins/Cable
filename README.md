@@ -4,7 +4,7 @@ Cable is a simple post-exploitation tool used for enumeration and further exploi
 Cable has a few primary features currently, with high hopes at feature expansion: 
 - The ability to request service tickets from accounts registered with a `servicePrincipalName` and place them in a crackable format as part of a Kerberoasting attack. 
 - The ability to write and remove the value of the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
-- Enumeration of Active Directory Certificate Services (ADCS) certificate templates.
+- Enumeration of Active Directory Certificate Services (ADCS) CA's and certificate templates.
 - Enumeration of domain trusts configured in the current forest.
 - Enumeration of domain controllers in the current domain.
 - General LDAP enumeration with both pre-created queries and the ability to specify custom queries.
@@ -32,7 +32,7 @@ Modules:
         dclist                    - List Domain Controllers in the current Domain
         rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
         trusts                    - Enumerate Active Directory Domain Trusts in the current Forest
-        ca                        - Enumerate any active Active Directory Certiifcate Services (ADCS) CA's
+        ca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's
         templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
         user [Options]            - Preform general operations on user accounts
         group [Options]           - Enumerate group membership, add, and remove users from groups
