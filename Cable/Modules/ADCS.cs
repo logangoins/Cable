@@ -46,12 +46,11 @@ namespace Cable.Modules
             }
         public static void templateLookup()
         {
+
             DirectoryEntry de = new DirectoryEntry("LDAP://RootDSE");
             String context = de.Properties["configurationNamingContext"].Value.ToString();
 
-            string root = "CN=Certificate Templates,CN=Public Key Services,CN=Services," + context;
-
-            DirectoryEntry newDe = new DirectoryEntry("LDAP://" + root);
+            DirectoryEntry newDe = new DirectoryEntry("LDAP://" + context);
             DirectorySearcher ds = new DirectorySearcher(newDe);
 
             ds.Filter = "(objectCategory=pKICertificateTemplate)";
