@@ -90,7 +90,7 @@ namespace Cable.Modules
                     catch
                     {
                         Console.WriteLine("[!] Please supply all the valid options, use \"Cable.exe -h\" for more information");
-                        System.Environment.Exit(1);
+                        return null;
                     }
                 }
             }
@@ -135,6 +135,10 @@ namespace Cable.Modules
                                 string[] enumOptions = { "--users", "--computers", "--groups", "--gpos", "--spns", "--asrep", "--admins", "--unconstrained", "--constrained", "--rbcd"};
 
                                 Dictionary<string, string> enumcmd = Parse(args, enumFlags, enumOptions);
+                                if(enumcmd == null)
+                                {
+                                    return;
+                                }
                                 enumcmd.TryGetValue("--query", out query);
                                 enumcmd.TryGetValue("--filter", out filter);
                                 if(filter != null)
@@ -189,6 +193,10 @@ namespace Cable.Modules
                             string[] rbcdOptions = { "--write" };
 
                             Dictionary<string, string> rbcdcmd = Parse(args, rbcdFlags, rbcdOptions);
+                            if(rbcdcmd == null)
+                            {
+                                return;
+                            }
                             rbcdcmd.TryGetValue("--delegate-from", out delegate_from);
                             rbcdcmd.TryGetValue("--delegate-to", out delegate_to);
                             rbcdcmd.TryGetValue("--flush", out account);
@@ -240,6 +248,10 @@ namespace Cable.Modules
                             string[] userFlags = { "--setspn", "--removespn", "--user", "--password" };
                             string[] userOptions = { };
                             Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
+                            if(usercmd == null)
+                            {
+                                return;
+                            }
                             usercmd.TryGetValue("--setspn", out aspn);
                             usercmd.TryGetValue("--removespn", out rspn);
                             usercmd.TryGetValue("--user", out user);
@@ -285,6 +297,10 @@ namespace Cable.Modules
                             string[] groupFlags = {"--group", "--add", "--remove" };
                             string[] groupOptions = { "--getmembership" };
                             Dictionary<string, string> groupcmd = Parse(args, groupFlags, groupOptions);
+                            if(groupcmd == null)
+                            {
+                                return;
+                            }
                             groupcmd.TryGetValue("--getmembership", out getmem);
                             groupcmd.TryGetValue("--group", out group);
                             groupcmd.TryGetValue("--add", out add);
