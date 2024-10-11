@@ -58,9 +58,9 @@ namespace Cable.Modules
                 return;
             }
             
-            RawSecurityDescriptor rd = new RawSecurityDescriptor("O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;" + sid + ")");
-            Byte[] bDescriptor = new byte[rd.BinaryLength];
-            rd.GetBinaryForm(bDescriptor, 0);
+            RawSecurityDescriptor rsd = new RawSecurityDescriptor("O:BAD:(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;" + sid + ")");
+            Byte[] descriptor = new byte[rsd.BinaryLength];
+            rsd.GetBinaryForm(descriptor, 0);
 
             SearchResultCollection results;
 
@@ -89,7 +89,7 @@ namespace Cable.Modules
                     }
                     else
                     {
-                        mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(bDescriptor);
+                        mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(descriptor);
                         mde.CommitChanges();
                         Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
                     }
