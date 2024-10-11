@@ -19,7 +19,7 @@ namespace Cable.Modules
                 "\tkerberoast <account>      - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist                    - List Domain Controllers in the current Domain\n" +
                 "\trbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
-                "\ttrusts                    - Enumerate Active Directory Domain Trusts in the current Forest\n" +
+                "\ttrusts                    - Enumerate Active Directory Domain and Forest Trusts\n" +
                 "\tca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's\n" +
                 "\ttemplates                 - Enumerate Active Directory Certificate Services (ADCS) Templates\n" +
                 "\tuser [Options]            - Preform general operations on user accounts\n" +
