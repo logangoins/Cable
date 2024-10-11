@@ -41,7 +41,7 @@ namespace Cable.Modules
                 if (!t)
                 {
                     Console.WriteLine("[!] Command not recognized\n");
-                    System.Environment.Exit(1);
+                    return;
                 }
             }
             ds.Filter = q;
@@ -50,7 +50,7 @@ namespace Cable.Modules
             if (results.Count == 0)
             {
                 Console.WriteLine("[!] No objects found");
-                System.Environment.Exit(0);
+                return;
             }
 
             foreach (SearchResult sr in results)

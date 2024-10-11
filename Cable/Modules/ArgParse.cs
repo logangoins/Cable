@@ -177,6 +177,10 @@ namespace Cable.Modules
                             else
                             {
                                 string[] spns = Kerberoast.GetSPNs();
+                                if(spns == null)
+                                {
+                                    return;
+                                }
                                 Kerberoast.Roast(spns);
                             }
                             break;

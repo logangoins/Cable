@@ -92,7 +92,7 @@ namespace Cable.Modules
             if (results.Count == 0)
             {
                 Console.WriteLine("[-] No Kerberoastable accounts found");
-                System.Environment.Exit(0);
+                return null;
             }
             foreach (SearchResult sr in results)
             {
