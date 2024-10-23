@@ -23,7 +23,7 @@ Cable has a few primary features currently, with high hopes at feature expansion
    \ \_______\ \__\ \__\ \_______\ \_______\ \_______\
     \|_______|\|__|\|__|\|_______|\|_______|\|_______|
 
-Active Directory Enumeration and Exploitation tool
+.NET post-exploitation toolkit for Active Directory reconnaissance and exploitation 
 
 Cable.exe [Module]
 Modules:
