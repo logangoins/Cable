@@ -9,7 +9,7 @@ namespace Cable
         {
 
             Console.WriteLine(" ________  ________  ________  ___       _______      \r\n|\\   ____\\|\\   __  \\|\\   __  \\|\\  \\     |\\  ___ \\     \r\n\\ \\  \\___|\\ \\  \\|\\  \\ \\  \\|\\ /\\ \\  \\    \\ \\   __/|    \r\n \\ \\  \\    \\ \\   __  \\ \\   __  \\ \\  \\    \\ \\  \\_|/__  \r\n  \\ \\  \\____\\ \\  \\ \\  \\ \\  \\|\\  \\ \\  \\____\\ \\  \\_|\\ \\ \r\n   \\ \\_______\\ \\__\\ \\__\\ \\_______\\ \\_______\\ \\_______\\\r\n    \\|_______|\\|__|\\|__|\\|_______|\\|_______|\\|_______|\r\n");
-            Console.WriteLine("Active Directory Enumeration and Exploitation tool\n");
+            Console.WriteLine(".NET post-exploitation toolkit for Active Directory reconnaissance and exploitation \n");
 
             try
             {
