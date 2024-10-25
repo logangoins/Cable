@@ -15,7 +15,7 @@ namespace Cable.Modules
             string help =
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
-                "\tenum [Options]            - Enumerate LDAP\n" +
+                "\tldap [Options]            - Enumerate LDAP\n" +
                 "\tkerberoast <account>      - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist                    - List Domain Controllers in the current Domain\n" +
                 "\trbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
@@ -26,7 +26,7 @@ namespace Cable.Modules
                 "\tgroup [Options]           - Enumerate group membership, add, and remove users from groups\n\n" +
 
                 "Module Options\n" +
-                "enum:\n" +
+                "ldap:\n" +
                 "\t--users                   - Enumerate user objects\n" +
                 "\t--computers               - Enumerate computer objects\n" +
                 "\t--groups                  - Enumerate group objects\n" +
@@ -64,7 +64,7 @@ namespace Cable.Modules
 
         static List<string> sMods = new List<string> 
         { 
-            "enum",
+            "ldap",
             "kerberoast",
             "dclist",
             "rbcd",
@@ -123,7 +123,7 @@ namespace Cable.Modules
                 {
                     switch (args.First().ToLower())
                     {
-                        case "enum":
+                        case "ldap":
                             if (args.Length > 1)
                             {
                                 string query = null;
