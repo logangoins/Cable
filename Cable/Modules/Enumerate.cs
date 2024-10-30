@@ -55,7 +55,7 @@ namespace Cable.Modules
 
             foreach (SearchResult sr in results)
             {
-
+                Console.WriteLine("[+] Found object: " + sr.Properties["name"][0]);
                 foreach (string attribute in attributes)
                 {
                     if (sr.Properties.Contains(attribute))
@@ -63,34 +63,33 @@ namespace Cable.Modules
                         if (attribute == "objectsid")
                         {
                             SecurityIdentifier sid = new SecurityIdentifier(sr.Properties[attribute][0] as byte[], 0);
-                            Console.WriteLine("objectSid: " + sid.Value);
+                            Console.WriteLine("\t|__ objectSid:\n " + "\t|    |__ " + sid.Value);
                         }
                         else if (attribute == "msds-allowedtoactonbehalfofotheridentity")
                         {
+                            Console.Write("\t|__ msds-allowedtoactonbehalfofotheridentity:\n ");
                             RawSecurityDescriptor rsd = new RawSecurityDescriptor((byte[])sr.Properties[attribute][0], 0);
                             foreach (CommonAce ace in rsd.DiscretionaryAcl)
                             {
-                                Console.WriteLine(RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
+                                Console.WriteLine("\t|    |__ " + RBCD.sidToAccountLookup(ace.SecurityIdentifier.ToString()));
                             }
                         }
                         else if (attribute == "useraccountcontrol")
                         {
-                            Console.Write("userAccountControl: ");
-                            Console.WriteLine((hCable.USER_ACCOUNT_CONTROL)Convert.ToInt32(sr.Properties[attribute][0].ToString()));
+                            Console.Write("\t|__ userAccountControl:\n ");
+                            Console.WriteLine("\t|    |__ "+ (hCable.USER_ACCOUNT_CONTROL)Convert.ToInt32(sr.Properties[attribute][0].ToString()));
                         }
                         else
                         {
-                            Console.Write(attribute + ": ");
+                            Console.Write("\t|__ " + attribute + ":\n");
                             foreach(var value in sr.Properties[attribute])
                             {
-                                Console.Write(value.ToString() + " ");
+                                Console.WriteLine("\t|    |__ " + value.ToString());
                             }
-                            Console.Write('\n');
                         }
                     }
                 }
                 Console.Write("\n");
-
             }
 
         }
