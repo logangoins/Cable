@@ -23,11 +23,12 @@ Cable has a few primary features currently, with high hopes at feature expansion
    \ \_______\ \__\ \__\ \_______\ \_______\ \_______\
     \|_______|\|__|\|__|\|_______|\|_______|\|_______|
 
-.NET post-exploitation toolkit for Active Directory reconnaissance and exploitation 
+.NET post-exploitation toolkit for Active Directory reconnaissance and exploitation
+
 
 Cable.exe [Module]
 Modules:
-        enum [Options]            - Enumerate LDAP
+        ldap [Options]            - Enumerate LDAP
         kerberoast <account>      - Kerberoast a potentially supplied account, or everything
         dclist                    - List Domain Controllers in the current Domain
         rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
@@ -38,7 +39,7 @@ Modules:
         group [Options]           - Enumerate group membership, add, and remove users from groups
 
 Module Options
-enum:
+ldap:
         --users                   - Enumerate user objects
         --computers               - Enumerate computer objects
         --groups                  - Enumerate group objects
@@ -69,6 +70,7 @@ group:
         --group <group>           - The group used for an operation specified
         --add <account>           - Add a specified account to the group selected
         --remove <account>        - Remove a specified account from the group selected
+
 ```
 
 
