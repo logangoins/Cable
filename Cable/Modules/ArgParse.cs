@@ -50,13 +50,14 @@ namespace Cable.Modules
                 "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
                 "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
                 "\t--user <account>          - Specify user account to preform operations on\n" +
-                "\t--password <password>     - Change an accounts password\n\n" +
+                "\t--password <password>     - Change an accounts password\n" +
+                "\t--getgroups               - Operation to enumerate a users current group membership\n\n" +
 
                 "group:\n" +
-                "\t--getmembership           - Operation to get Active Directory group membership\n" +
                 "\t--group <group>           - The group used for an operation specified\n" +
                 "\t--add <account>           - Add a specified account to the group selected\n" +
-                "\t--remove <account>        - Remove a specified account from the group selected\n";
+                "\t--remove <account>        - Remove a specified account from the group selected\n" +
+                "\t--getusers                - Operation to enumerate current users in a group\n";
 
             Console.WriteLine(help);
 
@@ -248,9 +249,10 @@ namespace Cable.Modules
                             string aspn = null;
                             string rspn = null;
                             string password = null;
+                            string getgroups = null;
 
                             string[] userFlags = { "--setspn", "--removespn", "--user", "--password" };
-                            string[] userOptions = { };
+                            string[] userOptions = { "--getgroups" };
                             Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
                             if(usercmd == null)
                             {
@@ -260,6 +262,7 @@ namespace Cable.Modules
                             usercmd.TryGetValue("--removespn", out rspn);
                             usercmd.TryGetValue("--user", out user);
                             usercmd.TryGetValue("--password", out password);
+                            usercmd.TryGetValue("--getgroups", out getgroups);
 
                             if (aspn != null || rspn != null)
                             {
@@ -291,6 +294,19 @@ namespace Cable.Modules
                                 }
                                 Users.changePassword(user, password);
                             }
+                            else if (getgroups == "True")
+                            {
+                                if (user == null)
+                                {
+                                    Console.WriteLine("[!] Please supply a value for the user");
+                                    return;
+                                }
+                                Users.getGroups(user);
+                            }
+                            else
+                            {
+                                Console.WriteLine("[!] Please specify an action");
+                            }
                             break;
                         case "group":
                             string group = null;
@@ -299,13 +315,13 @@ namespace Cable.Modules
                             string remove = null;
 
                             string[] groupFlags = {"--group", "--add", "--remove" };
-                            string[] groupOptions = { "--getmembership" };
+                            string[] groupOptions = { "--getusers" };
                             Dictionary<string, string> groupcmd = Parse(args, groupFlags, groupOptions);
                             if(groupcmd == null)
                             {
                                 return;
                             }
-                            groupcmd.TryGetValue("--getmembership", out getmem);
+                            groupcmd.TryGetValue("--getusers", out getmem);
                             groupcmd.TryGetValue("--group", out group);
                             groupcmd.TryGetValue("--add", out add);
                             groupcmd.TryGetValue("--remove", out remove);
@@ -355,7 +371,7 @@ namespace Cable.Modules
             }
             else
             {
-                Console.WriteLine("[!] Cannot find module");
+                Console.WriteLine("[!] Please specify a module: use \"Cable.exe -h\" for more details");
             }
         }
     }
