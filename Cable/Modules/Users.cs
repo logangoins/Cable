@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
+using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -105,6 +106,32 @@ namespace Cable.Modules
             catch (Exception ex)
             {
                 Console.WriteLine("[!] Failed to change users password: " + ex.Message);
+            }
+        }
+        public static void getGroups(string user)
+        {
+            PrincipalContext ctx = new PrincipalContext(ContextType.Domain);
+            UserPrincipal userPrincipal = UserPrincipal.FindByIdentity(ctx, user);
+
+            if (userPrincipal == null)
+            {
+                Console.WriteLine("[!] Cannot find user: " + user);
+                return;
+            }
+
+            PrincipalSearchResult<Principal> gcollection = userPrincipal.GetAuthorizationGroups();
+
+            if (gcollection.Count() == 0)
+            {
+                Console.WriteLine("[!] No groups found");
+                return;
+            }
+
+            Console.WriteLine("[+] Membership of user: " + user);
+
+            foreach (Principal group in gcollection)
+            {
+                Console.WriteLine("\t|__ samAccountName: " + group.SamAccountName);
             }
         }
     }
