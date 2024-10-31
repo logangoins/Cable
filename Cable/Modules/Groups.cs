@@ -26,15 +26,11 @@ namespace Cable.Modules
                 return;
             }
 
-            Console.WriteLine("[+] Members in group: " + group + "\n");
+            Console.WriteLine("[+] Members in group: " + group);
 
             foreach (Principal member in gcollection)
             {
-                Console.WriteLine("samAccountName: " + member.SamAccountName);
-                Console.WriteLine("ObjectSid: " + member.Sid);
-                Console.WriteLine("distinguishedName: " + member.DistinguishedName);
-                Console.Write("\n");
-
+                Console.WriteLine("\t|__ samAccountName: " + member.SamAccountName);
             }
         }
 
