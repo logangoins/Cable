@@ -149,20 +149,19 @@ namespace Cable.Modules
                                 if (query != null)
                                 {
                                     type = "query";
-                                }
-                                else
-                                {
-                                    foreach(string option in enumOptions)
-                                    {
-                                        enumcmd.TryGetValue(option, out selection);
-                                        if(selection == "True")
-                                        {
-                                            type = option;
-                                        }
-                                    }
+                                    Enumerate.Enum(type, query, attributes);
                                 }
 
-                                Enumerate.Enum(type, query, attributes);
+                                foreach(string option in enumOptions)
+                                {
+                                    enumcmd.TryGetValue(option, out selection);
+                                    if(selection == "True")
+                                    {
+                                        type = option;
+                                        Enumerate.Enum(type, query, attributes);
+                                    }
+                                }
+                                
                             }
                             else
                             {
