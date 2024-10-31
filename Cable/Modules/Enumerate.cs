@@ -77,7 +77,7 @@ namespace Cable.Modules
                         else if (attribute == "useraccountcontrol")
                         {
                             Console.Write("\t|__ userAccountControl:\n ");
-                            Console.WriteLine("\t|    |__ "+ (hCable.USER_ACCOUNT_CONTROL)Convert.ToInt32(sr.Properties[attribute][0].ToString()));
+                            Console.WriteLine("\t|    |__ " + (hCable.USER_ACCOUNT_CONTROL)Convert.ToInt32(sr.Properties[attribute][0].ToString()));
                         }
                         else
                         {
@@ -97,13 +97,13 @@ namespace Cable.Modules
         public static void Dclist()
         {
             Domain domain = Domain.GetCurrentDomain();
-            DomainControllerCollection dcs = domain.FindAllDomainControllers();
+            DomainControllerCollection dcs = domain.FindAllDiscoverableDomainControllers();
             foreach (DomainController controller in dcs)
             {
-                Console.WriteLine("\n" + controller.Name + "\n===================");
-                Console.WriteLine("Forest: " + controller.Forest);
-                Console.WriteLine("IP: " + controller.IPAddress);
-                Console.WriteLine("Version: " + controller.OSVersion + "\n");
+                Console.WriteLine("[+] DC Found: " + controller.Name);
+                Console.WriteLine("\t|__ Forest: " + controller.Forest);
+                Console.WriteLine("\t|__ IP: " + controller.IPAddress);
+                Console.WriteLine("\t|__ Version: " + controller.OSVersion + "\n");
             }
         }
 
@@ -118,11 +118,11 @@ namespace Cable.Modules
 
                 foreach (TrustRelationshipInformation trust in ftrusts)
                 {
-                    Console.WriteLine("Source: " + trust.SourceName);
-                    Console.WriteLine("Target: " + trust.TargetName);
-                    Console.WriteLine("Direction: " + trust.TrustDirection);
-                    Console.WriteLine("Trust Type: " + trust.TrustType);
-
+                    Console.WriteLine("[+] Found Trust: ");
+                    Console.WriteLine("\t|__ Source: " + trust.SourceName);
+                    Console.WriteLine("\t|__ Target: " + trust.TargetName);
+                    Console.WriteLine("\t|__ Direction: " + trust.TrustDirection);
+                    Console.WriteLine("\t|__ Trust Type: " + trust.TrustType + "\n");
                 }
             }
             else
@@ -138,10 +138,11 @@ namespace Cable.Modules
             {
                 foreach (TrustRelationshipInformation trust in dtrusts)
                 {
-                    Console.WriteLine("Source: " + trust.SourceName);
-                    Console.WriteLine("Target: " + trust.TargetName);
-                    Console.WriteLine("Direction: " + trust.TrustDirection);
-                    Console.WriteLine("Trust Type: " + trust.TrustType + "\n");
+                    Console.WriteLine("[+] Found Trust: ");
+                    Console.WriteLine("\t|__ Source: " + trust.SourceName);
+                    Console.WriteLine("\t|__ Target: " + trust.TargetName);
+                    Console.WriteLine("\t|__ Direction: " + trust.TrustDirection);
+                    Console.WriteLine("\t|__ Trust Type: " + trust.TrustType + "\n");
 
                 }
             }
