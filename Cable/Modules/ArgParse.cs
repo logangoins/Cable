@@ -249,9 +249,11 @@ namespace Cable.Modules
                             string rspn = null;
                             string password = null;
                             string getgroups = null;
+                            string setasrep = null;
+                            string removeasrep = null;
 
                             string[] userFlags = { "--setspn", "--removespn", "--user", "--password" };
-                            string[] userOptions = { "--getgroups" };
+                            string[] userOptions = { "--getgroups", "--setasrep", "--removeasrep" };
                             Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
                             if(usercmd == null)
                             {
@@ -262,6 +264,9 @@ namespace Cable.Modules
                             usercmd.TryGetValue("--user", out user);
                             usercmd.TryGetValue("--password", out password);
                             usercmd.TryGetValue("--getgroups", out getgroups);
+                            usercmd.TryGetValue("--setasrep", out setasrep);
+                            usercmd.TryGetValue("--removeasrep", out removeasrep);
+
 
                             if (aspn != null || rspn != null)
                             {
@@ -301,6 +306,24 @@ namespace Cable.Modules
                                     return;
                                 }
                                 Users.getGroups(user);
+                            }
+                            else if (setasrep == "True")
+                            {
+                                if (user == null)
+                                {
+                                    Console.WriteLine("[!] Please supply a value for the user");
+                                    return;
+                                }
+                                Users.Asrep(user, "add");
+                            }
+                            else if (removeasrep == "True")
+                            {
+                                if (user == null)
+                                {
+                                    Console.WriteLine("[!] Please supply a value for the user");
+                                    return;
+                                }
+                                Users.Asrep(user, "remove");
                             }
                             else
                             {
