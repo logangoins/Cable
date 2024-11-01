@@ -49,6 +49,8 @@ namespace Cable.Modules
                 "user:\n" +
                 "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
                 "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
+                "\t--setasrep                - Operation to set the DONT_REQ_PRE flag on an objects userAccountControl attribute\n" +
+                "\t--removeasrep             - Operation to remove the DONT_REQ_PRE flag on an objects userAccountControl attribute\n" +
                 "\t--user <account>          - Specify user account to preform operations on\n" +
                 "\t--password <password>     - Change an accounts password\n" +
                 "\t--getgroups               - Operation to enumerate a users current group membership\n\n" +
