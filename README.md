@@ -7,10 +7,12 @@ Cable has a few primary features currently, with high hopes at feature expansion
 - Enumeration of Active Directory Certificate Services (ADCS) CA's and certificate templates.
 - Enumeration of domain and forest trusts.
 - Enumeration of domain controllers in the current domain.
-- General LDAP enumeration with both pre-created queries and the ability to specify custom queries.
+- General LDAP enumeration with pre-created queries, the ability to specify custom queries, and the ability to specify returned attributes.
 - The ability to perform password changes.
 - The ability to set and remove the value of the `servicePrincipalName` attribute on an object, making it kerberoastable and non-kerberoastable respectfully.
-- Enumeration of group membership.
+- The ability to set and remove the `DONT_REQ_PREAUTH` flag on an objects `userAccountControl` attribute, making it ASREP-Roastable and non ASREP-Roastable respectfully.
+- Enumeration of group membership for users.
+- Enumeration of user membership for groups.
 - The ability to add and remove accounts from groups.
 
 ## Usage
@@ -62,14 +64,17 @@ rbcd:
 user:
         --setspn <value>          - Write to an objects servicePrincipalName attribute
         --removespn <value>       - Remove a specified value off the servicePrincipalName attribute
+        --setasrep                - Operation to set the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute
+        --removeasrep             - Operation to remove the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute
         --user <account>          - Specify user account to preform operations on
         --password <password>     - Change an accounts password
+        --getgroups               - Operation to enumerate a users current group membership
 
 group:
-        --getmembership           - Operation to get Active Directory group membership
         --group <group>           - The group used for an operation specified
         --add <account>           - Add a specified account to the group selected
         --remove <account>        - Remove a specified account from the group selected
+        --getusers                - Operation to enumerate current users in a group
 
 ```
 
