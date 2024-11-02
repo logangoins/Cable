@@ -49,8 +49,8 @@ namespace Cable.Modules
                 "user:\n" +
                 "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
                 "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
-                "\t--setasrep                - Operation to set the DONT_REQ_PRE flag on an objects userAccountControl attribute\n" +
-                "\t--removeasrep             - Operation to remove the DONT_REQ_PRE flag on an objects userAccountControl attribute\n" +
+                "\t--setasrep                - Operation to set the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
+                "\t--removeasrep             - Operation to remove the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
                 "\t--user <account>          - Specify user account to preform operations on\n" +
                 "\t--password <password>     - Change an accounts password\n" +
                 "\t--getgroups               - Operation to enumerate a users current group membership\n\n" +
@@ -71,6 +71,7 @@ namespace Cable.Modules
             "kerberoast",
             "dclist",
             "rbcd",
+            "dacl",
             "trusts",
             "templates",
             "ca",
@@ -235,6 +236,53 @@ namespace Cable.Modules
                             {
                                 Help();
                             }
+                            break;
+                        case "dacl":
+
+                            string obj = null;
+                            string daclread = null;
+                            string daclwrite = null;
+                            string daclaccount = null;
+                            string[] daclFlags = { "--object", "--account" };
+                            string[] daclOptions = { "--read", "--write" };
+
+                            Dictionary<string, string> daclcmd = Parse(args, daclFlags, daclOptions);
+                            if (daclcmd == null)
+                            {
+                                return;
+                            }
+                            daclcmd.TryGetValue("--object", out obj);
+                            daclcmd.TryGetValue("--account", out daclaccount);
+                            daclcmd.TryGetValue("--read", out daclread);
+                            daclcmd.TryGetValue("--write", out daclwrite);
+
+                            if(daclread == "True")
+                            {
+                                if (obj == null)
+                                {
+                                    Console.WriteLine("[!] Please specify an object to conduct an operation on");
+                                }
+                                else
+                                {
+                                    DACL.getAce(obj, daclaccount);
+                                }
+                            }
+                            else if (daclwrite == "True")
+                            {
+                                if (obj == null)
+                                {
+                                    Console.WriteLine("[!] Please specify an object to conduct an operation on");
+                                }
+                                else
+                                {
+                                    ; ;
+                                }
+                            }
+                            else
+                            {
+                                Help();
+                            }
+
                             break;
                         case "trusts":
                             Enumerate.enumTrusts();

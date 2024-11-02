@@ -49,6 +49,7 @@
     <Compile Include="Modules\ArgParse.cs" />
     <Compile Include="Modules\Asn1\AsnElt.cs" />
     <Compile Include="Modules\Asn1\AsnException.cs" />
+    <Compile Include="Modules\DACL.cs" />
     <Compile Include="Modules\Enumerate.cs" />
     <Compile Include="Modules\Groups.cs" />
     <Compile Include="Modules\hCable.cs" />
