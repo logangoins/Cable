@@ -34,6 +34,7 @@ Modules:
         kerberoast <account>      - Kerberoast a potentially supplied account, or everything
         dclist                    - List Domain Controllers in the current Domain
         rbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute
+        dacl [Options]            - Read or write Access Control Entries (ACE)s on an object
         trusts                    - Enumerate Active Directory Domain and Forest Trusts
         ca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's
         templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
@@ -60,6 +61,13 @@ rbcd:
         --delegate-to <account>   - Target account to delegate access to
         --delegate-from <account> - Controlled account to delegate from
         --flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account
+
+dacl:
+        --object <object>         - Object to perform DACL operations on
+        --read                    - Operation to read the objects Access Control Entries (ACE)s
+        --write <permission>      - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership
+        --guid <guid>             - Specify custom GUID for permission or extended right to write on the object, alternative for "--write"
+        --account <account>       - Display access an account has on the target object, or set access to this account on the target object
 
 user:
         --setspn <value>          - Write to an objects servicePrincipalName attribute
