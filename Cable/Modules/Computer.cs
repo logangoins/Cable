@@ -24,7 +24,7 @@ namespace Cable.Modules
                 }
 
                 DirectoryEntry de = new DirectoryEntry(dn);
-                Console.WriteLine("[+] Adding Computer object");
+                Console.WriteLine("[+] Adding computer object");
                 DirectoryEntry deComp = de.Children.Add("CN=" + name, "computer");
                 Console.WriteLine("[+] Adding default attributes");
                 deComp.Properties["sAMAccountName"].Value = name.ToUpper() + "$";
@@ -36,13 +36,13 @@ namespace Cable.Modules
                 deComp.Properties["servicePrincipalName"].Add("RestrictedKrbHost/" + name + "." + domainName);
                 deComp.CommitChanges();
 
-                Console.WriteLine("[+] Setting Computer account password");
+                Console.WriteLine("[+] Setting computer account password");
                 deComp.Invoke("SetPassword", new object[] { password });
-                Console.WriteLine("[+] Successfully added Computer account " + name + " with password " + password);
+                Console.WriteLine("[+] Successfully added computer account " + name + " with password " + password);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[!] Could not add Computer account");
+                Console.WriteLine("[!] Could not add computer account");
                 Console.WriteLine("[!] Error: " + ex.Message);
             }
         }

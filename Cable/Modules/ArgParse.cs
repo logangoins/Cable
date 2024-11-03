@@ -24,6 +24,7 @@ namespace Cable.Modules
                 "\tca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's\n" +
                 "\ttemplates                 - Enumerate Active Directory Certificate Services (ADCS) Templates\n" +
                 "\tuser [Options]            - Preform general operations on user accounts\n" +
+                "\tcomputer [Options]        - Add and remove computer accounts from the domain" +
                 "\tgroup [Options]           - Enumerate group membership, add, and remove users from groups\n\n" +
 
                 "Module Options\n" +
