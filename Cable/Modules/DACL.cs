@@ -55,7 +55,7 @@ namespace Cable.Modules
             ds.Filter = $"(rightsGuid={rightsGuid.ToString("D")})";
             SearchResult sr = ds.FindOne();
 
-            if(sr != null)
+            if (sr != null)
             {
                 return sr.Properties["cn"][0].ToString();
             }
@@ -108,28 +108,27 @@ namespace Cable.Modules
                             }
                             else
                             {
-
-                                String schema = schemaGuidLookup(ar.ObjectType);
-                                if (String.IsNullOrEmpty(schema))
+                                String rights = rightsGuidLookup(ar.ObjectType);
+                                if (String.IsNullOrEmpty(rights))
                                 {
-                                    String rights = rightsGuidLookup(ar.ObjectType);
-                                    if (String.IsNullOrEmpty(rights))
+                                    String schema = schemaGuidLookup(ar.ObjectType);
+                                    if (String.IsNullOrEmpty(schema))
                                     {
                                         Console.WriteLine("\t|    |__ Object: " + ar.ObjectType.ToString());
                                     }
                                     else
                                     {
-                                        Console.WriteLine("\t|    |__ Object: " + rights);
+                                        Console.WriteLine("\t|    |__ Attribute: " + schema);
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine("\t|    |__ Object: " + schema);
+                                    Console.WriteLine("\t|    |__ Object: " + rights);
                                 }
 
                             }
                         }
-                    }  
+                    }
                 }
             }
             catch (Exception ex)
@@ -137,6 +136,91 @@ namespace Cable.Modules
                 Console.WriteLine("[!] Failed to get access control entry for " + obj);
                 Console.WriteLine("[!] Error: " + ex.Message);
             }
+        }
+
+        // Inspired by https://github.com/FuzzySecurity/StandIn/blob/main/StandIn/StandIn/Program.cs#L1811
+
+        public static void setAce(string obj, string account, string permission, string guid)
+        {
+            try
+            {
+                SearchResultCollection results;
+
+                DirectoryEntry de = new DirectoryEntry();
+                DirectorySearcher ds = new DirectorySearcher(de);
+
+                string query = "(samaccountname=" + obj + ")";
+                ds.Filter = query;
+                results = ds.FindAll();
+
+                if (results.Count == 0)
+                {
+                    Console.WriteLine("[!] Cannot find object");
+                    return;
+                }
+
+                foreach (SearchResult sr in results)
+                {
+                    DirectoryEntry mde = sr.GetDirectoryEntry();
+                    IdentityReference ir = new NTAccount(account);
+
+                    if (permission == "genericall")
+                    {
+                        ActiveDirectoryAccessRule adar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.GenericAll, AccessControlType.Allow, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.AddAccessRule(adar);
+                    }
+                    else if (permission == "genericwrite")
+                    {
+                        ActiveDirectoryAccessRule adar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.GenericWrite, AccessControlType.Allow, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.AddAccessRule(adar);
+                    }
+                    else if (permission == "resetpassword")
+                    {
+                        Guid rightGuid = new Guid("00299570-246d-11d0-a768-00aa006e0529");
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.AddAccessRule(ar);
+                    }
+                    else if (permission == "writemember")
+                    {
+                        Guid rightGuid = new Guid("bf9679c0-0de6-11d0-a285-00aa003049e2");
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.AddAccessRule(ar);
+                    }
+                    else if (guid != null)
+                    {
+                        Guid rightGuid = new Guid(guid);
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.AddAccessRule(ar);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[!] Please specify a valid permission or GUID");
+                    }
+
+                    mde.CommitChanges();
+                    if (!String.IsNullOrEmpty(permission))
+                    {
+                        Console.WriteLine("[+] Successfully added " + permission + " onto " + obj);
+                    }
+                    else
+                    {
+                        Guid rightGuid = new Guid(guid);
+                        string right = rightsGuidLookup(rightGuid);
+                        Console.WriteLine("[+] Successfully added " + right + " onto " + obj);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Failed to write access control entry for " + obj);
+                Console.WriteLine("[!] Error: " + ex.Message);
+            }
+
         }
     }
 }
