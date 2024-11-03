@@ -46,6 +46,13 @@ namespace Cable.Modules
                 "\t--delegate-from <account> - Controlled account to delegate from\n" +
                 "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n\n" +
                 
+                "dacl:\n" +
+                "\t--object <object>         - Object to perform DACL operations on\n" +
+                "\t--read                    - Operation to read the objects Access Control Entries (ACE)s\n" +
+                "\t--write <permission>      - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
+                "\t--guid <guid>             - Specify custom GUID for permission or extended right to write on the object, alternative for \"--write\"\n" +
+                "\t--account <account>       - Display access an account has on the target object, or set access to this account on the target object\n\n" +
+
                 "user:\n" +
                 "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
                 "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
@@ -243,8 +250,9 @@ namespace Cable.Modules
                             string daclread = null;
                             string daclwrite = null;
                             string daclaccount = null;
-                            string[] daclFlags = { "--object", "--account" };
-                            string[] daclOptions = { "--read", "--write" };
+                            string guid = null;
+                            string[] daclFlags = { "--object", "--account", "--guid", "--write" };
+                            string[] daclOptions = { "--read" };
 
                             Dictionary<string, string> daclcmd = Parse(args, daclFlags, daclOptions);
                             if (daclcmd == null)
@@ -255,6 +263,7 @@ namespace Cable.Modules
                             daclcmd.TryGetValue("--account", out daclaccount);
                             daclcmd.TryGetValue("--read", out daclread);
                             daclcmd.TryGetValue("--write", out daclwrite);
+                            daclcmd.TryGetValue("--guid", out guid);
 
                             if(daclread == "True")
                             {
@@ -267,15 +276,19 @@ namespace Cable.Modules
                                     DACL.getAce(obj, daclaccount);
                                 }
                             }
-                            else if (daclwrite == "True")
+                            else if (daclwrite != null || guid != null)
                             {
-                                if (obj == null)
+                                if (obj == null || daclaccount == null)
                                 {
-                                    Console.WriteLine("[!] Please specify an object to conduct an operation on");
+                                    Console.WriteLine("[!] Please specify both an account to grant access from and an object to conduct an operation on");
                                 }
                                 else
                                 {
-                                    ; ;
+                                    if (!String.IsNullOrEmpty(daclwrite))
+                                    {
+                                        daclwrite = daclwrite.ToLower();
+                                    }
+                                    DACL.setAce(obj, daclaccount, daclwrite, guid);
                                 }
                             }
                             else
