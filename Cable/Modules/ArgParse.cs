@@ -52,7 +52,7 @@ namespace Cable.Modules
                 "\t--read                    - Operation to read the objects Access Control Entries (ACE)s\n" +
                 "\t--write <permission>      - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
                 "\t--guid <guid>             - Specify custom GUID for permission or extended right to write on the object, alternative for \"--write\"\n" +
-                "\t--account <account>       - Display access an account has on the target object, or set access to this account on the target object\n\n" +
+                "\t--account <account>       - Display access an account has on the target object, or set access to this account on the target object. Example: CORP\\jdoe\n\n" +
 
                 "user:\n" +
                 "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
@@ -62,6 +62,12 @@ namespace Cable.Modules
                 "\t--user <account>          - Specify user account to preform operations on\n" +
                 "\t--password <password>     - Change an accounts password\n" +
                 "\t--getgroups               - Operation to enumerate a users current group membership\n\n" +
+
+                "computer:\n" +
+                "\t--add                     - Operation to add a computer account object\n" +
+                "\t--remove                  - Operation to delete a computer account object\n" +
+                "\t--name                    - Computer name to add or remove\n" +
+                "\t--password                - Computer account password\n\n" +
 
                 "group:\n" +
                 "\t--group <group>           - The group used for an operation specified\n" +
@@ -84,7 +90,8 @@ namespace Cable.Modules
             "templates",
             "ca",
             "group",
-            "user"
+            "user",
+            "computer"
         };
 
         public static Dictionary<string, string> Parse(string[] args, string[] flags, string[] options)
@@ -242,7 +249,7 @@ namespace Cable.Modules
                             }
                             else
                             {
-                                Help();
+                                Console.WriteLine("[!] Please specify an action");
                             }
                             break;
                         case "dacl":
@@ -294,7 +301,7 @@ namespace Cable.Modules
                             }
                             else
                             {
-                                Help();
+                                Console.WriteLine("[!] Please specify an action");
                             }
 
                             break;
@@ -393,6 +400,53 @@ namespace Cable.Modules
                             {
                                 Console.WriteLine("[!] Please specify an action");
                             }
+                            break;
+                        case "computer":
+                            string compadd = null;
+                            string compremove = null;
+                            string compname = null;
+                            string compassword = null;
+
+                            string[] compFlags = { "--name", "--password" };
+                            string[] compOptions = { "--add", "--remove" };
+                            Dictionary<string, string> compcmd = Parse(args, compFlags, compOptions);
+                            if (compcmd == null)
+                            {
+                                return;
+                            }
+
+                            compcmd.TryGetValue("--name", out compname);
+                            compcmd.TryGetValue("--add", out compadd);
+                            compcmd.TryGetValue("--password", out compassword);
+                            compcmd.TryGetValue("--remove", out compremove);
+
+                            if(compadd == "True")
+                            {
+                                if (compname == null || compassword == null)
+                                {
+                                    Console.WriteLine("[!] Please specify a computer name and password");
+                                }
+                                else
+                                {
+                                    Computer.AddComputer(compname, compassword);
+                                }
+                            }
+                            else if(compremove == "True")
+                            {
+                                if(compname == null)
+                                {
+                                    Console.WriteLine("[!] Please specify a computer name to remove");
+                                }
+                                else
+                                {
+                                    Computer.RemoveComputer(compname);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("[!] Please specify an action");
+                            }
+
                             break;
                         case "group":
                             string group = null;
