@@ -4,6 +4,7 @@ Cable is a simple post-exploitation tool used for enumeration and further exploi
 Cable has a few primary features currently, with high hopes at feature expansion: 
 - The ability to request service tickets from accounts registered with a `servicePrincipalName` and place them in a crackable format as part of a Kerberoasting attack. 
 - The ability to write and remove the value of the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
+- The ability to read and write Discretionary Access Control List (DACL) Access Control Entries (ACE)s
 - Enumeration of Active Directory Certificate Services (ADCS) CA's and certificate templates.
 - Enumeration of domain and forest trusts.
 - Enumeration of domain controllers in the current domain.
@@ -12,6 +13,7 @@ Cable has a few primary features currently, with high hopes at feature expansion
 - The ability to set and remove the value of the `servicePrincipalName` attribute on an object, making it kerberoastable and non-kerberoastable respectfully.
 - The ability to set and remove the `DONT_REQ_PREAUTH` flag on an objects `userAccountControl` attribute, making it ASREP-Roastable and non ASREP-Roastable respectfully.
 - Enumeration of group membership for users.
+- The ability to create and delete computer objects
 - Enumeration of user membership for groups.
 - The ability to add and remove accounts from groups.
 
@@ -27,7 +29,6 @@ Cable has a few primary features currently, with high hopes at feature expansion
 
 .NET post-exploitation toolkit for Active Directory reconnaissance and exploitation
 
-
 Cable.exe [Module]
 Modules:
         ldap [Options]            - Enumerate LDAP
@@ -39,6 +40,7 @@ Modules:
         ca                        - Enumerate any active Active Directory Certifcate Services (ADCS) CA's
         templates                 - Enumerate Active Directory Certificate Services (ADCS) Templates
         user [Options]            - Preform general operations on user accounts
+        computer [Options]        - Add and remove computer accounts from the domain
         group [Options]           - Enumerate group membership, add, and remove users from groups
 
 Module Options
@@ -67,7 +69,7 @@ dacl:
         --read                    - Operation to read the objects Access Control Entries (ACE)s
         --write <permission>      - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership
         --guid <guid>             - Specify custom GUID for permission or extended right to write on the object, alternative for "--write"
-        --account <account>       - Display access an account has on the target object, or set access to this account on the target object
+        --account <account>       - Display access an account has on the target object, or set access to this account on the target object. Example: CORP\jdoe
 
 user:
         --setspn <value>          - Write to an objects servicePrincipalName attribute
@@ -77,6 +79,12 @@ user:
         --user <account>          - Specify user account to preform operations on
         --password <password>     - Change an accounts password
         --getgroups               - Operation to enumerate a users current group membership
+
+computer:
+        --add                     - Operation to add a computer account object
+        --remove                  - Operation to delete a computer account object
+        --name                    - Computer name to add or remove
+        --password                - Computer account password
 
 group:
         --group <group>           - The group used for an operation specified
