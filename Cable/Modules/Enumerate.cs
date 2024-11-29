@@ -1,12 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Cable.Modules
 {
@@ -55,7 +52,23 @@ namespace Cable.Modules
 
             foreach (SearchResult sr in results)
             {
+                // Print the object name
                 Console.WriteLine("[+] Found object: " + sr.Properties["name"][0]);
+
+                // Check if the type is --gpos and print the GPO specific attributes
+                if (type == "--gpos")
+                {
+                    if (sr.Properties.Contains("displayName"))
+                    {
+                        Console.WriteLine("\t|__ GPO Name: " + sr.Properties["displayName"][0]);
+                    }
+                    if (sr.Properties.Contains("gPCFileSysPath"))
+                    {
+                        Console.WriteLine("\t|__ GPC File System Path: " + sr.Properties["gPCFileSysPath"][0]);
+                    }
+                }
+
+                // Now print additional attributes if they exist
                 foreach (string attribute in attributes)
                 {
                     if (sr.Properties.Contains(attribute))
@@ -82,7 +95,7 @@ namespace Cable.Modules
                         else
                         {
                             Console.Write("\t|__ " + attribute + ":\n");
-                            foreach(var value in sr.Properties[attribute])
+                            foreach (var value in sr.Properties[attribute])
                             {
                                 Console.WriteLine("\t|    |__ " + value.ToString());
                             }
@@ -91,7 +104,6 @@ namespace Cable.Modules
                 }
                 Console.Write("\n");
             }
-
         }
 
         public static void Dclist()
@@ -134,7 +146,7 @@ namespace Cable.Modules
             TrustRelationshipInformationCollection dtrusts = domain.GetAllTrustRelationships();
 
             Console.WriteLine("[+] Enumerating Domain trusts");
-            if(dtrusts.Count > 0)
+            if (dtrusts.Count > 0)
             {
                 foreach (TrustRelationshipInformation trust in dtrusts)
                 {
@@ -152,6 +164,5 @@ namespace Cable.Modules
             }
 
         }
-
     }
 }
