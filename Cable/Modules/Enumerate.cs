@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
@@ -21,6 +21,7 @@ namespace Cable.Modules
             queries.Add("--computers", "(ObjectClass=computer)");
             queries.Add("--groups", "(ObjectCategory=group)");
             queries.Add("--gpos", "(ObjectClass=groupPolicyContainer)");
+            queries.Add("--ous", "(ObjectClass=organizationalUnit)");
             queries.Add("--spns", "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))");
             queries.Add("--asrep", "(&(userAccountControl:1.2.840.113556.1.4.803:=4194304)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))");
             queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
@@ -56,6 +57,78 @@ namespace Cable.Modules
             foreach (SearchResult sr in results)
             {
                 Console.WriteLine("[+] Found object: " + sr.Properties["name"][0]);
+
+                // Check if the type is --gpos and print the GPO specific attributes
+                if (type == "--gpos")
+                {
+                    if (sr.Properties.Contains("displayName"))
+                    {
+                        Console.WriteLine("\t|__ GPO Name: " + sr.Properties["displayName"][0]);
+                    }
+                    if (sr.Properties.Contains("gPCFileSysPath"))
+                    {
+                        Console.WriteLine("\t|__ GPC File System Path: " + sr.Properties["gPCFileSysPath"][0]);
+                    }
+                }
+
+                if (type == "--ous")
+                {
+
+                    if (sr.Properties.Contains("gplink"))
+                    {
+                        Console.WriteLine("\t|__ Linked GPOs:");
+                        foreach (var link in sr.Properties["gplink"])
+                        {
+                            // Normally the gpLink looks like [LDAP://CN={GUID},CN=Policies,CN=System,DC=testlab,DC=local;0]
+                            string[] DNsplit = link.ToString().Split(new[] { "[", "]" }, StringSplitOptions.RemoveEmptyEntries);
+
+                            foreach (var gpoLink in DNsplit) // Process each gpLink
+                            {
+                                // Extract GUID from the DN
+                                string GUID = gpoLink.Split(new[] { "{", "}" }, StringSplitOptions.RemoveEmptyEntries)[1];
+                                //Console.WriteLine($"\t|    [DEBUG] Parsed GUID: {GUID}"); // DEBUG
+
+                                // Construct LDAP query
+                                string ldapQuery = $"(&(ObjectClass=groupPolicyContainer)(cn={{{GUID}}}))"; // Need to add extra { } for the query itself since I split using it
+                                                                                                            // Console.WriteLine($"\t|    [DEBUG] LDAP Query: {ldapQuery}"); // DEBUG
+
+                                // Perform LDAP query
+                                DirectoryEntry gpoDe = new DirectoryEntry();
+                                DirectorySearcher gpoDs = new DirectorySearcher(gpoDe)
+                                {
+                                    Filter = ldapQuery,
+                                    SearchScope = SearchScope.Subtree
+                                };
+                                gpoDs.PropertiesToLoad.Add("displayName");
+
+                                SearchResultCollection gpoResults = gpoDs.FindAll();
+                                if (gpoResults.Count > 0)
+                                {
+                                    foreach (SearchResult gpoResult in gpoResults)
+                                    {
+                                        if (gpoResult.Properties.Contains("displayName"))
+                                        {
+                                            Console.WriteLine($"\t|    |__ GPO Name: {gpoResult.Properties["displayName"][0]}");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("\t|    |__ GPO Name: Not Found");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"\t|    |__ No GPO found for GUID: {GUID}");
+                                }
+
+                                // Optional: Extract and print the GPO DN
+                                string gpoLinkDN = gpoLink.Remove(gpoLink.Length - 2).Remove(0, 10); // Remove 'LDAP://cn=' and ';0'
+                                Console.WriteLine($"\t|    |__ GPO DN: {gpoLinkDN}");
+                            }
+                        }
+                    }
+                }
+
                 foreach (string attribute in attributes)
                 {
                     if (sr.Properties.Contains(attribute))
@@ -82,17 +155,17 @@ namespace Cable.Modules
                         else
                         {
                             Console.Write("\t|__ " + attribute + ":\n");
-                            foreach(var value in sr.Properties[attribute])
+                            foreach (var value in sr.Properties[attribute])
                             {
                                 Console.WriteLine("\t|    |__ " + value.ToString());
                             }
                         }
                     }
                 }
-                Console.Write("\n");
-            }
+                    Console.Write("\n");
+                }
 
-        }
+            }
 
         public static void Dclist()
         {
@@ -134,7 +207,7 @@ namespace Cable.Modules
             TrustRelationshipInformationCollection dtrusts = domain.GetAllTrustRelationships();
 
             Console.WriteLine("[+] Enumerating Domain trusts");
-            if(dtrusts.Count > 0)
+            if (dtrusts.Count > 0)
             {
                 foreach (TrustRelationshipInformation trust in dtrusts)
                 {

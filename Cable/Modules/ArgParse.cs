@@ -33,6 +33,7 @@ namespace Cable.Modules
                 "\t--computers               - Enumerate computer objects\n" +
                 "\t--groups                  - Enumerate group objects\n" +
                 "\t--gpos                    - Enumerate Group Policy objects\n" +
+                "\t--ous                     - Enumerate Organizational Units\n" +
                 "\t--spns                    - Enumerate objects with servicePrincipalName set\n" +
                 "\t--asrep                   - Enumerate accounts that do not require Kerberos pre-authentication\n" +
                 "\t--admins                  - Enumerate accounts with adminCount set to 1\n" +
@@ -152,7 +153,7 @@ namespace Cable.Modules
                                 string selection = null;
                                 List<string> attributes = new List<string>() { "samaccountname", "objectsid", "distinguishedname" };
                                 string[] enumFlags = { "--query", "--filter" };
-                                string[] enumOptions = { "--users", "--computers", "--groups", "--gpos", "--spns", "--asrep", "--admins", "--unconstrained", "--constrained", "--rbcd"};
+                                string[] enumOptions = { "--users", "--computers", "--groups", "--gpos", "--ous", "--spns", "--asrep", "--admins", "--unconstrained", "--constrained", "--rbcd"};
 
                                 Dictionary<string, string> enumcmd = Parse(args, enumFlags, enumOptions);
                                 if(enumcmd == null)
