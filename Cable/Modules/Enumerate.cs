@@ -93,7 +93,7 @@ namespace Cable.Modules
                                                                                                             // Console.WriteLine($"\t|    [DEBUG] LDAP Query: {ldapQuery}"); // DEBUG
 
                                 // Perform LDAP query
-                                DirectoryEntry gpoDe = new DirectoryEntry("LDAP://DC=testlab,DC=local");
+                                DirectoryEntry gpoDe = new DirectoryEntry();
                                 DirectorySearcher gpoDs = new DirectorySearcher(gpoDe)
                                 {
                                     Filter = ldapQuery,
