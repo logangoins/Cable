@@ -173,8 +173,7 @@ namespace Cable.Modules
 
                                 foreach(string option in enumOptions)
                                 {
-                                    enumcmd.TryGetValue(option, out selection);
-                                    if(selection == "True")
+                                    if (args.Contains(option))
                                     {
                                         type = option;
                                         Enumerate.Enum(type, query, attributes);

@@ -17,16 +17,16 @@ namespace Cable.Modules
             SearchResultCollection results;
 
             Dictionary<string, string> queries = new Dictionary<string, string>();
-            queries.Add("--users", "(&(ObjectCategory=person)(ObjectClass=user))");
-            queries.Add("--computers", "(ObjectClass=computer)");
-            queries.Add("--groups", "(ObjectCategory=group)");
-            queries.Add("--gpos", "(ObjectClass=groupPolicyContainer)");
-            queries.Add("--spns", "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))");
-            queries.Add("--asrep", "(&(userAccountControl:1.2.840.113556.1.4.803:=4194304)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))");
-            queries.Add("--admins", "(&(admincount=1)(objectClass=user))");
-            queries.Add("--unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
-            queries.Add("--constrained", "(msds-allowedtodelegateto=*)");
-            queries.Add("--rbcd", "(msds-allowedtoactonbehalfofotheridentity=*)");
+            queries.Add("/users", "(&(ObjectCategory=person)(ObjectClass=user))");
+            queries.Add("/computers", "(ObjectClass=computer)");
+            queries.Add("/groups", "(ObjectCategory=group)");
+            queries.Add("/gpos", "(ObjectClass=groupPolicyContainer)");
+            queries.Add("/spns", "(&(&(servicePrincipalName=*)(!samAccountName=krbtgt))(!useraccountcontrol:1.2.840.113556.1.4.803:=2)(samAccountType=805306368))");
+            queries.Add("/asrep", "(&(userAccountControl:1.2.840.113556.1.4.803:=4194304)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))");
+            queries.Add("/admins", "(&(admincount=1)(objectClass=user))");
+            queries.Add("/unconstrained", "(userAccountControl:1.2.840.113556.1.4.803:=524288)");
+            queries.Add("/constrained", "(msds-allowedtodelegateto=*)");
+            queries.Add("/rbcd", "(msds-allowedtoactonbehalfofotheridentity=*)");
 
             DirectoryEntry de = new DirectoryEntry();
             DirectorySearcher ds = new DirectorySearcher(de);
