@@ -95,45 +95,46 @@ namespace Cable.Modules
             "computer"
         };
 
-        public static Dictionary<string, string> Parse(string[] args, string[] flags, string[] options)
+        // Adapted from Certify https://github.com/GhostPack/Rubeus/blob/master/Rubeus/Domain/ArgumentParser.cs#L8
+        public static Dictionary<string, string> Parse(IEnumerable<string> args)
         {
-            Dictionary<string, string> cmd = new Dictionary<string, string>();
-
-            foreach (string flag in flags)
+            var arguments = new Dictionary<string, string>();
+            try
             {
-                if (args.Contains(flag))
+                foreach (var argument in args)
                 {
-                    try
+                    var idx = argument.IndexOf(':');
+                    if (idx > 0)
                     {
-                        cmd.Add(flag, args[Array.IndexOf(args, flag) + 1]);
+                        arguments[argument.Substring(0, idx)] = argument.Substring(idx + 1);
                     }
-                    catch
+                    else
                     {
-                        Console.WriteLine("[!] Please supply all the valid options, use \"Cable.exe -h\" for more information");
-                        return null;
+                        idx = argument.IndexOf('=');
+                        if (idx > 0)
+                        {
+                            arguments[argument.Substring(0, idx)] = argument.Substring(idx + 1);
+                        }
+                        else
+                        {
+                            arguments[argument] = string.Empty;
+                        }
                     }
                 }
-            }
 
-            foreach (string option in options)
+                return arguments;
+            }
+            catch
             {
-                if (args.Contains(option))
-                {
-                    cmd.Add(option, "True");
-                }
-                else
-                {
-                    cmd.Add(option, "False");
-                }
+                Console.WriteLine("[!] Error parsing arguments");
+                return null;
             }
-
-            return cmd;
         }
 
         public static void Execute(string[] args)
         {
 
-            if(args.Contains("--help") || args.Contains("-h") || args.Length == 0)
+            if(args.Contains("/help") || args.Contains("/h") || args.Length == 0)
             {
                 Help();
             }
@@ -151,16 +152,15 @@ namespace Cable.Modules
                                 string type = null;
                                 string selection = null;
                                 List<string> attributes = new List<string>() { "samaccountname", "objectsid", "distinguishedname" };
-                                string[] enumFlags = { "--query", "--filter" };
-                                string[] enumOptions = { "--users", "--computers", "--groups", "--gpos", "--spns", "--asrep", "--admins", "--unconstrained", "--constrained", "--rbcd"};
+                                string[] enumOptions = { "/users", "/computers", "/groups", "/spns", "/asrep", "/admins", "/unconstrained", "/constrained", "/rbcd"};
 
-                                Dictionary<string, string> enumcmd = Parse(args, enumFlags, enumOptions);
+                                Dictionary<string, string> enumcmd = Parse(args);
                                 if(enumcmd == null)
                                 {
                                     return;
                                 }
-                                enumcmd.TryGetValue("--query", out query);
-                                enumcmd.TryGetValue("--filter", out filter);
+                                enumcmd.TryGetValue("/query", out query);
+                                enumcmd.TryGetValue("/filter", out filter);
                                 if(filter != null)
                                 {
                                     attributes = filter.Split(',').Select(a => a.Trim()).Select(a => a.ToLower()).ToList();
@@ -210,22 +210,17 @@ namespace Cable.Modules
                             string delegate_from = null;
                             string delegate_to = null;
                             string account = null;
-                            string write = null;
 
-                            string[] rbcdFlags = { "--delegate-from", "--delegate-to", "--flush" };
-                            string[] rbcdOptions = { "--write" };
-
-                            Dictionary<string, string> rbcdcmd = Parse(args, rbcdFlags, rbcdOptions);
+                            Dictionary<string, string> rbcdcmd = Parse(args);
                             if(rbcdcmd == null)
                             {
                                 return;
                             }
-                            rbcdcmd.TryGetValue("--delegate-from", out delegate_from);
-                            rbcdcmd.TryGetValue("--delegate-to", out delegate_to);
-                            rbcdcmd.TryGetValue("--flush", out account);
-                            rbcdcmd.TryGetValue("--write", out write);
+                            rbcdcmd.TryGetValue("/delegate-from", out delegate_from);
+                            rbcdcmd.TryGetValue("/delegate-to", out delegate_to);
+                            rbcdcmd.TryGetValue("/flush", out account);
 
-                            if (write == "True")
+                            if (args.Contains("/write"))
                             {
                                 if (delegate_from == null || delegate_to == null)
                                 {
@@ -236,7 +231,7 @@ namespace Cable.Modules
                                     RBCD.WriteRBCD(delegate_to, delegate_from);
                                 }
                             }
-                            else if (write == "False")
+                            else if (args.Contains("/flush"))
                             {
                                 if (account == null)
                                 {
@@ -256,25 +251,21 @@ namespace Cable.Modules
                         case "dacl":
 
                             string obj = null;
-                            string daclread = null;
                             string daclwrite = null;
                             string daclaccount = null;
                             string guid = null;
-                            string[] daclFlags = { "--object", "--account", "--guid", "--write" };
-                            string[] daclOptions = { "--read" };
 
-                            Dictionary<string, string> daclcmd = Parse(args, daclFlags, daclOptions);
+                            Dictionary<string, string> daclcmd = Parse(args);
                             if (daclcmd == null)
                             {
                                 return;
                             }
-                            daclcmd.TryGetValue("--object", out obj);
-                            daclcmd.TryGetValue("--account", out daclaccount);
-                            daclcmd.TryGetValue("--read", out daclread);
-                            daclcmd.TryGetValue("--write", out daclwrite);
-                            daclcmd.TryGetValue("--guid", out guid);
+                            daclcmd.TryGetValue("/object", out obj);
+                            daclcmd.TryGetValue("/account", out daclaccount);
+                            daclcmd.TryGetValue("/write", out daclwrite);
+                            daclcmd.TryGetValue("/guid", out guid);
 
-                            if(daclread == "True")
+                            if(args.Contains("/read"))
                             {
                                 if (obj == null)
                                 {
@@ -320,25 +311,16 @@ namespace Cable.Modules
                             string aspn = null;
                             string rspn = null;
                             string password = null;
-                            string getgroups = null;
-                            string setasrep = null;
-                            string removeasrep = null;
 
-                            string[] userFlags = { "--setspn", "--removespn", "--user", "--password" };
-                            string[] userOptions = { "--getgroups", "--setasrep", "--removeasrep" };
-                            Dictionary<string, string> usercmd = Parse(args, userFlags, userOptions);
+                            Dictionary<string, string> usercmd = Parse(args);
                             if(usercmd == null)
                             {
                                 return;
                             }
-                            usercmd.TryGetValue("--setspn", out aspn);
-                            usercmd.TryGetValue("--removespn", out rspn);
-                            usercmd.TryGetValue("--user", out user);
-                            usercmd.TryGetValue("--password", out password);
-                            usercmd.TryGetValue("--getgroups", out getgroups);
-                            usercmd.TryGetValue("--setasrep", out setasrep);
-                            usercmd.TryGetValue("--removeasrep", out removeasrep);
-
+                            usercmd.TryGetValue("/setspn", out aspn);
+                            usercmd.TryGetValue("/removespn", out rspn);
+                            usercmd.TryGetValue("/user", out user);
+                            usercmd.TryGetValue("/password", out password);
 
                             if (aspn != null || rspn != null)
                             {
@@ -370,7 +352,7 @@ namespace Cable.Modules
                                 }
                                 Users.changePassword(user, password);
                             }
-                            else if (getgroups == "True")
+                            else if (args.Contains("/getgroups"))
                             {
                                 if (user == null)
                                 {
@@ -379,7 +361,7 @@ namespace Cable.Modules
                                 }
                                 Users.getGroups(user);
                             }
-                            else if (setasrep == "True")
+                            else if (args.Contains("/setasrep"))
                             {
                                 if (user == null)
                                 {
@@ -388,7 +370,7 @@ namespace Cable.Modules
                                 }
                                 Users.Asrep(user, "add");
                             }
-                            else if (removeasrep == "True")
+                            else if (args.Contains("/removeasrep"))
                             {
                                 if (user == null)
                                 {
@@ -403,25 +385,19 @@ namespace Cable.Modules
                             }
                             break;
                         case "computer":
-                            string compadd = null;
-                            string compremove = null;
                             string compname = null;
                             string compassword = null;
 
-                            string[] compFlags = { "--name", "--password" };
-                            string[] compOptions = { "--add", "--remove" };
-                            Dictionary<string, string> compcmd = Parse(args, compFlags, compOptions);
+                            Dictionary<string, string> compcmd = Parse(args);
                             if (compcmd == null)
                             {
                                 return;
                             }
 
-                            compcmd.TryGetValue("--name", out compname);
-                            compcmd.TryGetValue("--add", out compadd);
-                            compcmd.TryGetValue("--password", out compassword);
-                            compcmd.TryGetValue("--remove", out compremove);
+                            compcmd.TryGetValue("/name", out compname);
+                            compcmd.TryGetValue("/password", out compassword);
 
-                            if(compadd == "True")
+                            if(args.Contains("/add"))
                             {
                                 if (compname == null || compassword == null)
                                 {
@@ -432,7 +408,7 @@ namespace Cable.Modules
                                     Computer.AddComputer(compname, compassword);
                                 }
                             }
-                            else if(compremove == "True")
+                            else if(args.Contains("/remove"))
                             {
                                 if(compname == null)
                                 {
@@ -451,21 +427,17 @@ namespace Cable.Modules
                             break;
                         case "group":
                             string group = null;
-                            string getmem = null;
                             string add = null;
                             string remove = null;
 
-                            string[] groupFlags = {"--group", "--add", "--remove" };
-                            string[] groupOptions = { "--getusers" };
-                            Dictionary<string, string> groupcmd = Parse(args, groupFlags, groupOptions);
+                            Dictionary<string, string> groupcmd = Parse(args);
                             if(groupcmd == null)
                             {
                                 return;
                             }
-                            groupcmd.TryGetValue("--getusers", out getmem);
-                            groupcmd.TryGetValue("--group", out group);
-                            groupcmd.TryGetValue("--add", out add);
-                            groupcmd.TryGetValue("--remove", out remove);
+                            groupcmd.TryGetValue("/group", out group);
+                            groupcmd.TryGetValue("/add", out add);
+                            groupcmd.TryGetValue("/remove", out remove);
 
                             if (add != null)
                             {
@@ -485,7 +457,7 @@ namespace Cable.Modules
                                 }
                                 Groups.RemoveFromGroup(remove, group);
                             }
-                            else if (getmem == "True")
+                            else if (args.Contains("/getusers"))
                             {
                                 if(group == null)
                                 {
