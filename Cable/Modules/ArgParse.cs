@@ -68,8 +68,8 @@ namespace Cable.Modules
                 "computer:\n" +
                 "\t/add                      - Operation to add a computer account object\n" +
                 "\t/remove                   - Operation to delete a computer account object\n" +
-                "\t/name                     - Computer name to add or remove\n" +
-                "\t/password                 - Computer account password\n\n" +
+                "\t/name:<name>              - Computer name to add or remove\n" +
+                "\t/password:<passwd>        - Computer account password\n\n" +
 
                 "group:\n" +
                 "\t/group:<group>            - The group used for an operation specified\n" +
