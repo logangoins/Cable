@@ -32,7 +32,6 @@ namespace Cable.Modules
                 "\t/users                    - Enumerate user objects\n" +
                 "\t/computers                - Enumerate computer objects\n" +
                 "\t/groups                   - Enumerate group objects\n" +
-                "\t/gpos                     - Enumerate Group Policy objects\n" +
                 "\t/spns                     - Enumerate objects with servicePrincipalName set\n" +
                 "\t/asrep                    - Enumerate accounts that do not require Kerberos pre-authentication\n" +
                 "\t/admins                   - Enumerate accounts with adminCount set to 1\n" +
@@ -171,15 +170,21 @@ namespace Cable.Modules
                                     Enumerate.Enum(type, query, attributes);
                                 }
 
-                                foreach(string option in enumOptions)
+                                bool valid = false;
+                                foreach (string option in enumOptions)
                                 {
                                     if (args.Contains(option))
                                     {
+                                        valid = true;
                                         type = option;
                                         Enumerate.Enum(type, query, attributes);
                                     }
                                 }
-                                
+
+                                if (!valid)
+                                {
+                                    Console.WriteLine("[!] Please specify a valid option for the ldap module, see \"Cable.exe /h\" for more information");
+                                }
                             }
                             else
                             {
