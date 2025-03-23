@@ -29,52 +29,53 @@ namespace Cable.Modules
 
                 "Module Options\n" +
                 "ldap:\n" +
-                "\t--users                   - Enumerate user objects\n" +
-                "\t--computers               - Enumerate computer objects\n" +
-                "\t--groups                  - Enumerate group objects\n" +
-                "\t--gpos                    - Enumerate Group Policy objects\n" +
-                "\t--spns                    - Enumerate objects with servicePrincipalName set\n" +
-                "\t--asrep                   - Enumerate accounts that do not require Kerberos pre-authentication\n" +
-                "\t--admins                  - Enumerate accounts with adminCount set to 1\n" +
-                "\t--constrained             - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
-                "\t--unconstrained           - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
-                "\t--rbcd                    - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
-                "\t--query <query>           - Enumerate objects with a custom query\n" +
-                "\t--filter <attr, attr>     - Enumerate objects for specific attributes\n\n" +
+                "\t/users                    - Enumerate user objects\n" +
+                "\t/computers                - Enumerate computer objects\n" +
+                "\t/groups                   - Enumerate group objects\n" +
+                "\t/gpos                     - Enumerate Group Policy objects\n" +
+                "\t/spns                     - Enumerate objects with servicePrincipalName set\n" +
+                "\t/asrep                    - Enumerate accounts that do not require Kerberos pre-authentication\n" +
+                "\t/admins                   - Enumerate accounts with adminCount set to 1\n" +
+                "\t/constrained              - Enumerate accounts with msDs-AllowedToDelegateTo set\n" +
+                "\t/unconstrained            - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
+                "\t/rbcd                     - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
+                "\t/query:<query>            - Enumerate objects with a custom query\n" +
+                "\t/filter:\"<attr, attr>\"  - Enumerate objects for specific attributes\n\n" +
 
                 "rbcd:\n" +
-                "\t--write                   - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
-                "\t--delegate-to <account>   - Target account to delegate access to\n" +
-                "\t--delegate-from <account> - Controlled account to delegate from\n" +
-                "\t--flush <account>         - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n\n" +
+                "\t/write                    - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
+                "\t/delegate-to:<account>    - Target account to delegate access to\n" +
+                "\t/delegate-from:<account>  - Controlled account to delegate from\n" +
+                "\t/flush:<account>          - Operation to flush msDs-AllowedToActOnBehalfOfOtherIdentity on an account\n\n" +
                 
                 "dacl:\n" +
-                "\t--object <object>         - Object to perform DACL operations on\n" +
-                "\t--read                    - Operation to read the objects Access Control Entries (ACE)s\n" +
-                "\t--write <permission>      - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
-                "\t--guid <guid>             - Specify custom GUID for permission or extended right to write on the object, alternative for \"--write\"\n" +
-                "\t--account <account>       - Display access an account has on the target object, or set access to this account on the target object. Example: CORP\\jdoe\n\n" +
+                "\t/find                     - Find potentially vulnerable ACEs\n" +
+                "\t/object:<object>          - Object to perform DACL operations on\n" +
+                "\t/read                     - Operation to read the objects Access Control Entries (ACE)s\n" +
+                "\t/write:<permission>       - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
+                "\t/guid:<guid>              - Specify custom GUID for permission or extended right to write on the object, alternative for \"--write\"\n" +
+                "\t/account:<account>        - Display access an account has on the target object, or set access to this account on the target object. Example: CORP\\jdoe\n\n" +
 
                 "user:\n" +
-                "\t--setspn <value>          - Write to an objects servicePrincipalName attribute\n" +
-                "\t--removespn <value>       - Remove a specified value off the servicePrincipalName attribute\n" +
-                "\t--setasrep                - Operation to set the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
-                "\t--removeasrep             - Operation to remove the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
-                "\t--user <account>          - Specify user account to preform operations on\n" +
-                "\t--password <password>     - Change an accounts password\n" +
-                "\t--getgroups               - Operation to enumerate a users current group membership\n\n" +
+                "\t/setspn:<value>           - Write to an objects servicePrincipalName attribute\n" +
+                "\t/removespn:<value>        - Remove a specified value off the servicePrincipalName attribute\n" +
+                "\t/setasrep                 - Operation to set the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
+                "\t/removeasrep              - Operation to remove the DONT_REQ_PREAUTH flag on an objects userAccountControl attribute\n" +
+                "\t/user:<account>           - Specify user account to preform operations on\n" +
+                "\t/password:<password>      - Change an accounts password\n" +
+                "\t/getgroups                - Operation to enumerate a users current group membership\n\n" +
 
                 "computer:\n" +
-                "\t--add                     - Operation to add a computer account object\n" +
-                "\t--remove                  - Operation to delete a computer account object\n" +
-                "\t--name                    - Computer name to add or remove\n" +
-                "\t--password                - Computer account password\n\n" +
+                "\t/add                      - Operation to add a computer account object\n" +
+                "\t/remove                   - Operation to delete a computer account object\n" +
+                "\t/name                     - Computer name to add or remove\n" +
+                "\t/password                 - Computer account password\n\n" +
 
                 "group:\n" +
-                "\t--group <group>           - The group used for an operation specified\n" +
-                "\t--add <account>           - Add a specified account to the group selected\n" +
-                "\t--remove <account>        - Remove a specified account from the group selected\n" +
-                "\t--getusers                - Operation to enumerate current users in a group\n";
+                "\t/group:<group>            - The group used for an operation specified\n" +
+                "\t/add:<account>            - Add a specified account to the group selected\n" +
+                "\t/remove:<account>         - Remove a specified account from the group selected\n" +
+                "\t/getusers                 - Operation to enumerate current users in a group\n";
 
             Console.WriteLine(help);
 
@@ -150,7 +151,6 @@ namespace Cable.Modules
                                 string query = null;
                                 string filter = null;
                                 string type = null;
-                                string selection = null;
                                 List<string> attributes = new List<string>() { "samaccountname", "objectsid", "distinguishedname" };
                                 string[] enumOptions = { "/users", "/computers", "/groups", "/spns", "/asrep", "/admins", "/unconstrained", "/constrained", "/rbcd"};
 
@@ -264,7 +264,12 @@ namespace Cable.Modules
                             daclcmd.TryGetValue("/write", out daclwrite);
                             daclcmd.TryGetValue("/guid", out guid);
 
-                            if(args.Contains("/read"))
+
+                            if (args.Contains("/find"))
+                            {
+                                DACL.EnumerateComputerACLs();
+                            }
+                            else if (args.Contains("/read"))
                             {
                                 if (obj == null)
                                 {
@@ -478,12 +483,12 @@ namespace Cable.Modules
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Console.WriteLine("[!] Command invalid: use \"Cable.exe -h\" for more details");
+                    Console.WriteLine("[!] Command invalid: use \"Cable.exe /h\" for more details");
                 }
             }
             else
             {
-                Console.WriteLine("[!] Please specify a module: use \"Cable.exe -h\" for more details");
+                Console.WriteLine("[!] Please specify a module: use \"Cable.exe /h\" for more details");
             }
         }
     }
