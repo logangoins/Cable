@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.DirectoryServices;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
@@ -222,5 +223,76 @@ namespace Cable.Modules
             }
 
         }
+        public static string GetDomainSID()
+        {
+            try
+            {
+                // Get the root domain entry
+                DirectoryEntry domainEntry = new DirectoryEntry("LDAP://RootDSE");
+                string domainDN = domainEntry.Properties["defaultNamingContext"].Value.ToString();
+
+                // Get the domain object
+                DirectoryEntry domainObject = new DirectoryEntry($"LDAP://{domainDN}");
+
+                // Retrieve the objectSid property
+                byte[] sidBytes = (byte[])domainObject.Properties["objectSid"].Value;
+                SecurityIdentifier domainSid = new SecurityIdentifier(sidBytes, 0);
+
+                return domainSid.Value;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving domain SID: {ex.Message}");
+                return null;
+            }
+        }
+
+        public static void FindACEs()
+        {
+
+            Domain domain = Domain.GetComputerDomain();
+            String domainName = domain.Name;
+            string domainSID = GetDomainSID();
+
+            try
+            {
+                DirectorySearcher searcher = new DirectorySearcher(new DirectoryEntry());
+                searcher.Filter = "(|(objectClass=user)(objectClass=group))";
+                searcher.PropertiesToLoad.Add("distinguishedName");
+                searcher.PropertiesToLoad.Add("objectSid");
+
+                string pattern = domainSID + @"-[\d]{4,10}|" + RBCD.accountToSidLookup("Domain Users");
+
+                foreach (SearchResult result in searcher.FindAll())
+                {
+                    string objectDN = result.Properties["distinguishedName"][0].ToString();
+                    SecurityIdentifier objectSID = new SecurityIdentifier((byte[])result.Properties["objectSid"][0], 0);
+
+                    DirectoryEntry computerEntry = result.GetDirectoryEntry();
+                    ActiveDirectorySecurity security = computerEntry.ObjectSecurity;
+                    AuthorizationRuleCollection rules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
+
+                    foreach (ActiveDirectoryAccessRule rule in rules)
+                    {
+                        SecurityIdentifier sid = (SecurityIdentifier)rule.IdentityReference;
+                        if (System.Text.RegularExpressions.Regex.IsMatch(sid.Value, pattern))
+                        {
+
+                            Console.WriteLine("[+] Found Potentially Vulnerable ACE:");
+                            Console.WriteLine($"\t|__ Target Object: {RBCD.sidToAccountLookup(objectSID.Value)}");
+                            Console.WriteLine($"\t|__ Source Object: {RBCD.sidToAccountLookup(sid.Value)}");
+                            Console.WriteLine($"\t|__ Active Directory Rights: {rule.ActiveDirectoryRights.ToString()}");
+                            Console.WriteLine($"\t|__ Object ACE Type: {rule.AccessControlType}\n");
+                           
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
+
     }
 }

@@ -267,7 +267,7 @@ namespace Cable.Modules
 
                             if (args.Contains("/find"))
                             {
-                                DACL.EnumerateComputerACLs();
+                                DACL.FindACEs();
                             }
                             else if (args.Contains("/read"))
                             {
