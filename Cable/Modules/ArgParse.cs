@@ -191,22 +191,6 @@ namespace Cable.Modules
                                 Help();
                             }
                             break;
-                        case "kerberoast":
-                            if (args.Length > 1)
-                            {
-                                string[] kspn = { args[1] };
-                                Kerberoast.Roast(kspn);
-                            }
-                            else
-                            {
-                                string[] spns = Kerberoast.GetSPNs();
-                                if(spns == null)
-                                {
-                                    return;
-                                }
-                                Kerberoast.Roast(spns);
-                            }
-                            break;
                         case "dclist":
                             Enumerate.Dclist();
                             break;
