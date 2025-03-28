@@ -16,7 +16,6 @@ namespace Cable.Modules
                 "Cable.exe [Module]\n" +
                 "Modules:\n" +
                 "\tldap [Options]            - Enumerate LDAP\n" +
-                "\tkerberoast <account>      - Kerberoast a potentially supplied account, or everything\n" +
                 "\tdclist                    - List Domain Controllers in the current Domain\n" +
                 "\trbcd [Options]            - Write or remove the msDs-AllowedToActOnBehalfOfOtherIdentity attribute\n" +
                 "\tdacl [Options]            - Read or write Access Control Entries (ACE)s on an object\n" +
