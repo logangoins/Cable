@@ -218,17 +218,12 @@ namespace Cable.Modules
                                     RBCD.WriteRBCD(delegate_to, delegate_from);
                                 }
                             }
-                            else if (args.Contains("/flush"))
+                            else if (account != null)
                             {
-                                if (account == null)
-                                {
-                                    Console.WriteLine("[!] You must specify all the parameters required for an RBCD flush");
-
-                                }
-                                else
-                                {
-                                    RBCD.FlushRBCD(account);
-                                }
+                   
+                                
+                                RBCD.FlushRBCD(account);
+                                
                             }
                             else
                             {
