@@ -84,14 +84,14 @@ namespace Cable.Modules
                     DirectoryEntry mde = sr.GetDirectoryEntry();
                     if (sr.Properties.Contains("msds-allowedtoactonbehalfofotheridentity"))
                     {
-                        Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set..");
+                        Console.WriteLine("[!] This host already has a msDS-AllowedToActOnBehalfOfOtherIdentity attribute set");
                         return;
                     }
                     else
                     {
                         mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Add(descriptor);
                         mde.CommitChanges();
-                        Console.WriteLine("[+] SID added to msDS-AllowedToActOnBehalfOfOtherIdentity");
+                        Console.WriteLine($"[+] {delegate_from} SID added to msDS-AllowedToActOnBehalfOfOtherIdentity on {delegate_to}");
                     }
                 }
             }
@@ -127,11 +127,11 @@ namespace Cable.Modules
                         DirectoryEntry mde = sr.GetDirectoryEntry();
                         mde.Properties["msds-allowedtoactonbehalfofotheridentity"].Clear();
                         mde.CommitChanges();
-                        Console.WriteLine("[+] SIDs cleared from msDs-AllowedToActOnBehalfOfOtherIdentity");
+                        Console.WriteLine($"[+] SIDs cleared from msDs-AllowedToActOnBehalfOfOtherIdentity on {account}");
                     }
                     else
                     {
-                        Console.WriteLine("[!] Account does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
+                        Console.WriteLine($"[!] {account} does not have msDs-AllowedToActOnBehalfOfOtherIdentity set");
                         return;
                     }
                 }
