@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
+using System.DirectoryServices.Protocols;
+using System.IdentityModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,35 +12,43 @@ namespace Cable.Modules
 {
     public class Computer
     {
+        // Adapted from https://github.com/FuzzySecurity/StandIn/blob/main/StandIn/StandIn/Program.cs#L1488
+        // Can't use DirectoryEntry because pain
         public static void AddComputer(string name, string password)
         {
             try
             {
                 Domain domain = Domain.GetComputerDomain();
-                String domainName = domain.Name;
+                string dc = domain.PdcRoleOwner.Name;
+                string domainName = domain.Name;
+                string dn = "CN=" + name + ",CN=Computers";
 
-                String dn = "LDAP://CN=Computers";
                 foreach (String part in domainName.ToLower().Split('.'))
                 {
                     dn += ",DC=" + part;
                 }
 
-                DirectoryEntry de = new DirectoryEntry(dn);
-                Console.WriteLine("[+] Adding computer object");
-                DirectoryEntry deComp = de.Children.Add("CN=" + name, "computer");
-                Console.WriteLine("[+] Adding default attributes");
-                deComp.Properties["sAMAccountName"].Value = name.ToUpper() + "$";
-                deComp.Properties["userAccountControl"].Value = 0x1020;
-                deComp.Properties["DnsHostname"].Value = name + "." + domainName;
-                deComp.Properties["servicePrincipalName"].Add("HOST/" + name);
-                deComp.Properties["servicePrincipalName"].Add("HOST/" + name + "." + domainName);
-                deComp.Properties["servicePrincipalName"].Add("RestrictedKrbHost/" + name);
-                deComp.Properties["servicePrincipalName"].Add("RestrictedKrbHost/" + name + "." + domainName);
-                deComp.CommitChanges();
+                LdapDirectoryIdentifier ldapId = new LdapDirectoryIdentifier(dc, 389);
+                LdapConnection connection = new LdapConnection(ldapId);
 
-                Console.WriteLine("[+] Setting computer account password");
-                deComp.Invoke("SetPassword", new object[] { password });
+                connection.SessionOptions.Sealing = true; 
+                connection.SessionOptions.Signing = true;
+                connection.Bind();
+
+                AddRequest req = new AddRequest();
+                req.DistinguishedName = dn;
+                req.Attributes.Add(new DirectoryAttribute("objectClass", "Computer"));
+                req.Attributes.Add(new DirectoryAttribute("SamAccountName", name + "$"));
+                req.Attributes.Add(new DirectoryAttribute("userAccountControl", "4096"));
+                req.Attributes.Add(new DirectoryAttribute("DnsHostName", name + "." + domainName));
+                req.Attributes.Add(new DirectoryAttribute("ServicePrincipalName", new String[] { "HOST/" + name + "." + domainName, "RestrictedKrbHost/" + name + "." + domainName, "HOST/" + name, "RestrictedKrbHost/" + name}));
+
+                req.Attributes.Add(new DirectoryAttribute("unicodePwd", Encoding.Unicode.GetBytes('"' + password + '"')));
+                Console.WriteLine("[+] Adding computer object");
+                connection.SendRequest(req);
                 Console.WriteLine("[+] Successfully added computer account " + name + " with password " + password);
+                
+
             }
             catch (Exception ex)
             {
