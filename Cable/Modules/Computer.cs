@@ -16,6 +16,19 @@ namespace Cable.Modules
         // Can't use DirectoryEntry because pain
         public static void AddComputer(string name, string password)
         {
+            Console.WriteLine("[+] Checking MachineAccountQuota");
+            object maq = EnumMAQ();
+            if (maq == null)
+            {
+                Console.WriteLine("[!] Could not retrieve MachineAccountQuota");
+                return;
+            }
+            Console.WriteLine("[+] MachineAccountQuota: " + maq);
+            if(Int32.Parse(maq.ToString()) <= 0)
+            {
+                Console.WriteLine("[!] MachineAccountQuota is 0, cannot create new computer account");
+                return;
+            }
             try
             {
                 Domain domain = Domain.GetComputerDomain();
@@ -86,6 +99,22 @@ namespace Cable.Modules
                 Console.WriteLine("[!] Cannot remove Computer account");
                 Console.WriteLine("[!] Error: " + ex.Message);
             }
+        }
+
+        public static object EnumMAQ()
+        {
+            object maq = null;
+            try
+            {
+                DirectoryEntry de = new DirectoryEntry();
+                maq = de.Properties["ms-DS-MachineAccountQuota"].Value;
+                return maq;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Error: " + ex.Message);
+            }
+            return maq;
         }
     }
 }
