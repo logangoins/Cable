@@ -1,22 +1,5 @@
 # Cable
-Cable is a post-exploitation tool used for enumeration and further exploitation of Active Directory environment. This tool was primarily created to learn more about .NET offensive development in an Active Directory context, while hoping to expand my current knowledge and understanding of Active Directory focused offensive security.
-
-Cable has a few primary features currently, with high hopes at feature expansion: 
-- The ability to write and remove the value of the `msDs-AllowedToActOnBehalfOfOtherIdentity` attribute on desired objects, as part of a Resource-Based Constrained Delegation (RBCD) attack. 
-- The ability to read and write Discretionary Access Control List (DACL) Access Control Entries (ACE)s from objects
-- The ability to enumerate potentially vulnerable ACEs for the full domain
-- Enumeration of Active Directory Certificate Services (ADCS) CA's and certificate templates.
-- Enumeration of domain and forest trusts.
-- Enumeration of domain controllers in the current domain.
-- General LDAP enumeration with pre-created queries, the ability to specify custom queries, and the ability to specify returned attributes.
-- The ability to perform password changes.
-- The ability to set and remove the value of the `servicePrincipalName` attribute on an object, making it kerberoastable and non-kerberoastable respectfully.
-- The ability to set and remove the `DONT_REQ_PREAUTH` flag on an objects `userAccountControl` attribute, making it ASREP-Roastable and non ASREP-Roastable respectfully.
-- Enumeration of group membership for users.
-- The ability to enumerate a domains MachineAccountQuota
-- The ability to create and delete computer objects
-- Enumeration of user membership for groups.
-- The ability to add and remove accounts from groups.
+Cable is a post-exploitation tool used for reconnaissance and Discretionary Access Control List (DACL) focused exploitation of an Active Directory environment. This tool was primarily created to learn more about .NET offensive development in an Active Directory context, while hoping to expand my current knowledge and understanding of Active Directory focused offensive security.
 
 ## Usage
 ```
@@ -55,7 +38,7 @@ ldap:
         /unconstrained            - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set
         /rbcd                     - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set
         /query:<query>            - Enumerate objects with a custom query
-        /filter:"<attr, attr>"  - Enumerate objects for specific attributes
+        /filter:"<attr, attr>"    - Enumerate objects for specific attributes
 
 rbcd:
         /write                    - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity
@@ -91,6 +74,5 @@ group:
         /add:<account>            - Add a specified account to the group selected
         /remove:<account>         - Remove a specified account from the group selected
         /getusers                 - Operation to enumerate current users in a group
+
 ```
-
-
