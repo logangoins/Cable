@@ -282,8 +282,33 @@ namespace Cable.Modules
                             Console.WriteLine($"\t|__ Target Object: {RBCD.sidToAccountLookup(objectSID.Value)}");
                             Console.WriteLine($"\t|__ Source Object: {RBCD.sidToAccountLookup(sid.Value)}");
                             Console.WriteLine($"\t|__ Active Directory Rights: {rule.ActiveDirectoryRights.ToString()}");
-                            Console.WriteLine($"\t|__ Object ACE Type: {rule.AccessControlType}\n");
-                           
+                            if (rule.ObjectType.ToString() == "00000000-0000-0000-0000-000000000000")
+                            {
+                                Console.WriteLine("\t|__ Properties: ANY");
+                            }
+                            else
+                            {
+                                String rights = rightsGuidLookup(rule.ObjectType);
+                                if (String.IsNullOrEmpty(rights))
+                                {
+                                    String schema = schemaGuidLookup(rule.ObjectType);
+                                    if (String.IsNullOrEmpty(schema))
+                                    {
+                                        Console.WriteLine("\t|   |__ Schema: " + rule.ObjectType.ToString());
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\t|   |__ Attribute: " + schema);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\t|   |__ ExtendedRights: " + rights);
+                                }
+                            }
+                            Console.WriteLine($"\t|__ Object ACE Type: {rule.AccessControlType}");
+                            
+                            Console.Write("\n");
                         }
                     }
                 }
