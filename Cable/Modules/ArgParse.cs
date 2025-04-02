@@ -38,7 +38,7 @@ namespace Cable.Modules
                 "\t/unconstrained            - Enumerate accounts with the TRUSTED_FOR_DELEGATION flag set\n" +
                 "\t/rbcd                     - Enumerate accounts with msDs-AllowedToActOnBehalfOfOtherIdentity set\n" +
                 "\t/query:<query>            - Enumerate objects with a custom query\n" +
-                "\t/filter:\"<attr, attr>\"  - Enumerate objects for specific attributes\n\n" +
+                "\t/filter:\"<attr, attr>\"    - Enumerate objects for specific attributes\n\n" +
 
                 "rbcd:\n" +
                 "\t/write                    - Operation to write msDs-AllowedToActOnBehalfOfOtherIdentity\n" +
@@ -157,6 +157,7 @@ namespace Cable.Modules
                                 {
                                     return;
                                 }
+                                bool valid = false;
                                 enumcmd.TryGetValue("/query", out query);
                                 enumcmd.TryGetValue("/filter", out filter);
                                 if(filter != null)
@@ -166,10 +167,10 @@ namespace Cable.Modules
                                 if (query != null)
                                 {
                                     type = "query";
+                                    valid = true;
                                     Enumerate.Enum(type, query, attributes);
                                 }
 
-                                bool valid = false;
                                 foreach (string option in enumOptions)
                                 {
                                     if (args.Contains(option))
@@ -182,7 +183,7 @@ namespace Cable.Modules
 
                                 if (!valid)
                                 {
-                                    Console.WriteLine("[!] Please specify a valid option for the ldap module, see \"Cable.exe /h\" for more information");
+                                    Console.WriteLine("[!] Please specify an action");
                                 }
                             }
                             else
@@ -194,95 +195,107 @@ namespace Cable.Modules
                             Enumerate.Dclist();
                             break;
                         case "rbcd":
-                            string delegate_from = null;
-                            string delegate_to = null;
-                            string account = null;
-
-                            Dictionary<string, string> rbcdcmd = Parse(args);
-                            if(rbcdcmd == null)
+                            if (args.Length > 1)
                             {
-                                return;
-                            }
-                            rbcdcmd.TryGetValue("/delegate-from", out delegate_from);
-                            rbcdcmd.TryGetValue("/delegate-to", out delegate_to);
-                            rbcdcmd.TryGetValue("/flush", out account);
+                                string delegate_from = null;
+                                string delegate_to = null;
+                                string account = null;
 
-                            if (args.Contains("/write"))
-                            {
-                                if (delegate_from == null || delegate_to == null)
+                                Dictionary<string, string> rbcdcmd = Parse(args);
+                                if (rbcdcmd == null)
                                 {
-                                    Console.WriteLine("[!] You must specify all the parameters required for an RBCD write ");
+                                    return;
+                                }
+                                rbcdcmd.TryGetValue("/delegate-from", out delegate_from);
+                                rbcdcmd.TryGetValue("/delegate-to", out delegate_to);
+                                rbcdcmd.TryGetValue("/flush", out account);
+
+                                if (args.Contains("/write"))
+                                {
+                                    if (delegate_from == null || delegate_to == null)
+                                    {
+                                        Console.WriteLine("[!] You must specify all the parameters required for an RBCD write ");
+                                    }
+                                    else
+                                    {
+                                        RBCD.WriteRBCD(delegate_to, delegate_from);
+                                    }
+                                }
+                                else if (account != null)
+                                {
+
+
+                                    RBCD.FlushRBCD(account);
+
                                 }
                                 else
                                 {
-                                    RBCD.WriteRBCD(delegate_to, delegate_from);
+                                    Console.WriteLine("[!] Please specify an action");
                                 }
-                            }
-                            else if (account != null)
-                            {
-                   
-                                
-                                RBCD.FlushRBCD(account);
-                                
                             }
                             else
                             {
-                                Console.WriteLine("[!] Please specify an action");
+                                Help();
                             }
                             break;
                         case "dacl":
-
-                            string obj = null;
-                            string daclwrite = null;
-                            string daclaccount = null;
-                            string guid = null;
-
-                            Dictionary<string, string> daclcmd = Parse(args);
-                            if (daclcmd == null)
+                            if (args.Length > 1)
                             {
-                                return;
-                            }
-                            daclcmd.TryGetValue("/object", out obj);
-                            daclcmd.TryGetValue("/account", out daclaccount);
-                            daclcmd.TryGetValue("/write", out daclwrite);
-                            daclcmd.TryGetValue("/guid", out guid);
+                                string obj = null;
+                                string daclwrite = null;
+                                string daclaccount = null;
+                                string guid = null;
 
-
-                            if (args.Contains("/find"))
-                            {
-                                DACL.FindACEs();
-                            }
-                            else if (args.Contains("/read"))
-                            {
-                                if (obj == null)
+                                Dictionary<string, string> daclcmd = Parse(args);
+                                if (daclcmd == null)
                                 {
-                                    Console.WriteLine("[!] Please specify an object to conduct an operation on");
+                                    return;
                                 }
-                                else
+                                daclcmd.TryGetValue("/object", out obj);
+                                daclcmd.TryGetValue("/account", out daclaccount);
+                                daclcmd.TryGetValue("/write", out daclwrite);
+                                daclcmd.TryGetValue("/guid", out guid);
+
+
+                                if (args.Contains("/find"))
                                 {
-                                    DACL.getAce(obj, daclaccount);
+                                    DACL.FindACEs();
                                 }
-                            }
-                            else if (daclwrite != null || guid != null)
-                            {
-                                if (obj == null || daclaccount == null)
+                                else if (args.Contains("/read"))
                                 {
-                                    Console.WriteLine("[!] Please specify both an account to grant access from and an object to conduct an operation on");
-                                }
-                                else
-                                {
-                                    if (!String.IsNullOrEmpty(daclwrite))
+                                    if (obj == null)
                                     {
-                                        daclwrite = daclwrite.ToLower();
+                                        Console.WriteLine("[!] Please specify an object to conduct an operation on");
                                     }
-                                    DACL.setAce(obj, daclaccount, daclwrite, guid);
+                                    else
+                                    {
+                                        DACL.getAce(obj, daclaccount);
+                                    }
+                                }
+                                else if (daclwrite != null || guid != null)
+                                {
+                                    if (obj == null || daclaccount == null)
+                                    {
+                                        Console.WriteLine("[!] Please specify both an account to grant access from and an object to conduct an operation on");
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrEmpty(daclwrite))
+                                        {
+                                            daclwrite = daclwrite.ToLower();
+                                        }
+                                        DACL.setAce(obj, daclaccount, daclwrite, guid);
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("[!] Please specify an action");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("[!] Please specify an action");
+                                Help();
                             }
-
                             break;
                         case "trusts":
                             Enumerate.enumTrusts();
@@ -294,171 +307,190 @@ namespace Cable.Modules
                             ADCS.caLookup();
                             break;
                         case "user":
-                            string user = null;
-                            string aspn = null;
-                            string rspn = null;
-                            string password = null;
+                            if (args.Length > 1)
+                            {
+                                string user = null;
+                                string aspn = null;
+                                string rspn = null;
+                                string password = null;
 
-                            Dictionary<string, string> usercmd = Parse(args);
-                            if(usercmd == null)
-                            {
-                                return;
-                            }
-                            usercmd.TryGetValue("/setspn", out aspn);
-                            usercmd.TryGetValue("/removespn", out rspn);
-                            usercmd.TryGetValue("/user", out user);
-                            usercmd.TryGetValue("/password", out password);
+                                Dictionary<string, string> usercmd = Parse(args);
+                                if (usercmd == null)
+                                {
+                                    return;
+                                }
+                                usercmd.TryGetValue("/setspn", out aspn);
+                                usercmd.TryGetValue("/removespn", out rspn);
+                                usercmd.TryGetValue("/user", out user);
+                                usercmd.TryGetValue("/password", out password);
 
-                            if (aspn != null || rspn != null)
-                            {
-                                if(user == null)
+                                if (aspn != null || rspn != null)
                                 {
-                                    Console.WriteLine("[!] Please supply a value for the SPN and user account");
-                                    return;
+                                    if (user == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a value for the SPN and user account");
+                                        return;
+                                    }
+                                    if (aspn != null && rspn != null)
+                                    {
+                                        Console.WriteLine("[!] Cannot add and remove SPN at the same time");
+                                        return;
+                                    }
+                                    if (aspn != null)
+                                    {
+                                        Users.setSPN(aspn, user);
+                                    }
+                                    else if (rspn != null)
+                                    {
+                                        Users.removeSPN(rspn, user);
+                                    }
                                 }
-                                if(aspn != null && rspn != null)
+                                else if (password != null)
                                 {
-                                    Console.WriteLine("[!] Cannot add and remove SPN at the same time");
-                                    return;
+                                    if (user == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a value for the user and password");
+                                        return;
+                                    }
+                                    Users.changePassword(user, password);
                                 }
-                                if (aspn != null)
+                                else if (args.Contains("/getgroups"))
                                 {
-                                    Users.setSPN(aspn, user);
+                                    if (user == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a value for the user");
+                                        return;
+                                    }
+                                    Users.getGroups(user);
                                 }
-                                else if (rspn != null)
+                                else if (args.Contains("/setasrep"))
                                 {
-                                    Users.removeSPN(rspn, user);
+                                    if (user == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a value for the user");
+                                        return;
+                                    }
+                                    Users.Asrep(user, "add");
                                 }
-                            }
-                            else if (password != null)
-                            {
-                                if(user == null)
+                                else if (args.Contains("/removeasrep"))
                                 {
-                                    Console.WriteLine("[!] Please supply a value for the user and password");
-                                    return;
+                                    if (user == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a value for the user");
+                                        return;
+                                    }
+                                    Users.Asrep(user, "remove");
                                 }
-                                Users.changePassword(user, password);
-                            }
-                            else if (args.Contains("/getgroups"))
-                            {
-                                if (user == null)
+                                else
                                 {
-                                    Console.WriteLine("[!] Please supply a value for the user");
-                                    return;
+                                    Console.WriteLine("[!] Please specify an action");
                                 }
-                                Users.getGroups(user);
-                            }
-                            else if (args.Contains("/setasrep"))
-                            {
-                                if (user == null)
-                                {
-                                    Console.WriteLine("[!] Please supply a value for the user");
-                                    return;
-                                }
-                                Users.Asrep(user, "add");
-                            }
-                            else if (args.Contains("/removeasrep"))
-                            {
-                                if (user == null)
-                                {
-                                    Console.WriteLine("[!] Please supply a value for the user");
-                                    return;
-                                }
-                                Users.Asrep(user, "remove");
                             }
                             else
                             {
-                                Console.WriteLine("[!] Please specify an action");
+                                Help();
                             }
                             break;
                         case "computer":
-                            string compname = null;
-                            string compassword = null;
-
-                            Dictionary<string, string> compcmd = Parse(args);
-                            if (compcmd == null)
+                            if (args.Length > 1)
                             {
-                                return;
-                            }
+                                string compname = null;
+                                string compassword = null;
 
-                            compcmd.TryGetValue("/name", out compname);
-                            compcmd.TryGetValue("/password", out compassword);
-
-                            if(args.Contains("/add"))
-                            {
-                                if (compname == null || compassword == null)
+                                Dictionary<string, string> compcmd = Parse(args);
+                                if (compcmd == null)
                                 {
-                                    Console.WriteLine("[!] Please specify a computer name and password");
+                                    return;
+                                }
+
+                                compcmd.TryGetValue("/name", out compname);
+                                compcmd.TryGetValue("/password", out compassword);
+
+                                if (args.Contains("/add"))
+                                {
+                                    if (compname == null || compassword == null)
+                                    {
+                                        Console.WriteLine("[!] Please specify a computer name and password");
+                                    }
+                                    else
+                                    {
+                                        Computer.AddComputer(compname, compassword);
+                                    }
+                                }
+                                else if (args.Contains("/remove"))
+                                {
+                                    if (compname == null)
+                                    {
+                                        Console.WriteLine("[!] Please specify a computer name to remove");
+                                    }
+                                    else
+                                    {
+                                        Computer.RemoveComputer(compname);
+                                    }
                                 }
                                 else
                                 {
-                                    Computer.AddComputer(compname, compassword);
-                                }
-                            }
-                            else if(args.Contains("/remove"))
-                            {
-                                if(compname == null)
-                                {
-                                    Console.WriteLine("[!] Please specify a computer name to remove");
-                                }
-                                else
-                                {
-                                    Computer.RemoveComputer(compname);
+                                    Console.WriteLine("[!] Please specify an action");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("[!] Please specify an action");
+                                Help();
                             }
-
                             break;
                         case "group":
-                            string group = null;
-                            string add = null;
-                            string remove = null;
+                            if (args.Length > 1)
+                            {
+                                string group = null;
+                                string add = null;
+                                string remove = null;
 
-                            Dictionary<string, string> groupcmd = Parse(args);
-                            if(groupcmd == null)
-                            {
-                                return;
-                            }
-                            groupcmd.TryGetValue("/group", out group);
-                            groupcmd.TryGetValue("/add", out add);
-                            groupcmd.TryGetValue("/remove", out remove);
+                                Dictionary<string, string> groupcmd = Parse(args);
+                                if (groupcmd == null)
+                                {
+                                    return;
+                                }
+                                groupcmd.TryGetValue("/group", out group);
+                                groupcmd.TryGetValue("/add", out add);
+                                groupcmd.TryGetValue("/remove", out remove);
 
-                            if (add != null)
-                            {
-                                if (group == null)
+                                if (add != null)
                                 {
-                                    Console.WriteLine("[!] Please supply a group");
-                                    return;
+                                    if (group == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a group");
+                                        return;
+                                    }
+                                    Groups.AddToGroup(add, group);
                                 }
-                                Groups.AddToGroup(add, group);
-                            }
-                            else if (remove != null)
-                            {
-                                if (group == null)
+                                else if (remove != null)
                                 {
-                                    Console.WriteLine("[!] Please supply a group");
-                                    return;
+                                    if (group == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a group");
+                                        return;
+                                    }
+                                    Groups.RemoveFromGroup(remove, group);
                                 }
-                                Groups.RemoveFromGroup(remove, group);
-                            }
-                            else if (args.Contains("/getusers"))
-                            {
-                                if(group == null)
+                                else if (args.Contains("/getusers"))
                                 {
-                                    Console.WriteLine("[!] Please supply a group");
-                                    return;
+                                    if (group == null)
+                                    {
+                                        Console.WriteLine("[!] Please supply a group");
+                                        return;
+                                    }
+                                    Groups.GetGroupMembers(group);
                                 }
-                                Groups.GetGroupMembers(group);
+                                else
+                                {
+                                    Console.WriteLine("[!] Please specify an action");
+                                }
                             }
                             else
                             {
-                                Console.WriteLine("[!] Please specify an action");
+                                Help();
                             }
                             break;
-
                         default:
                             Help();
                             break;
