@@ -261,7 +261,7 @@ namespace Cable.Modules
                 searcher.PropertiesToLoad.Add("distinguishedName");
                 searcher.PropertiesToLoad.Add("objectSid");
 
-                string pattern = domainSID + @"-[\d]{4,10}|" + RBCD.accountToSidLookup("Domain Users");
+                string pattern = domainSID + @"-[\d]{4,10}|" + RBCD.accountToSidLookup("Domain Users") + "|" + RBCD.accountToSidLookup("Domain Computers");
 
                 foreach (SearchResult result in searcher.FindAll())
                 {
@@ -284,7 +284,7 @@ namespace Cable.Modules
                             Console.WriteLine($"\t|__ Active Directory Rights: {rule.ActiveDirectoryRights.ToString()}");
                             if (rule.ObjectType.ToString() == "00000000-0000-0000-0000-000000000000")
                             {
-                                Console.WriteLine("\t|__ Properties: ANY");
+                                Console.WriteLine("\t|   |__ Properties: ANY");
                             }
                             else
                             {
