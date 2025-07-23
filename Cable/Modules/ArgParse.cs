@@ -51,6 +51,7 @@ namespace Cable.Modules
                 "\t/object:<object>          - Object to perform DACL operations on\n" +
                 "\t/read                     - Operation to read the objects Access Control Entries (ACE)s\n" +
                 "\t/write:<permission>       - Write a ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
+                "\t/remove:<permission>      - Remove an ACE on the selected object, built in permissions are: GenericAll,GenericWrite,User-Force-Reset-Password,Self-Membership\n" +
                 "\t/guid:<guid>              - Specify custom GUID for permission or extended right to write on the object, alternative for \"--write\"\n" +
                 "\t/account:<account>        - Display access an account has on the target object, or set access to this account on the target object. Example: CORP\\jdoe\n\n" +
 
