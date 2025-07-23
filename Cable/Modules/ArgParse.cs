@@ -245,6 +245,7 @@ namespace Cable.Modules
                                 string daclwrite = null;
                                 string daclaccount = null;
                                 string guid = null;
+                                string daclremove = null;
 
                                 Dictionary<string, string> daclcmd = Parse(args);
                                 if (daclcmd == null)
@@ -255,7 +256,7 @@ namespace Cable.Modules
                                 daclcmd.TryGetValue("/account", out daclaccount);
                                 daclcmd.TryGetValue("/write", out daclwrite);
                                 daclcmd.TryGetValue("/guid", out guid);
-
+                                daclcmd.TryGetValue("/remove", out daclremove);
 
                                 if (args.Contains("/find"))
                                 {
@@ -285,6 +286,21 @@ namespace Cable.Modules
                                             daclwrite = daclwrite.ToLower();
                                         }
                                         DACL.setAce(obj, daclaccount, daclwrite, guid);
+                                    }
+                                }
+                                else if (daclremove != null || guid != null)
+                                {
+                                    if (obj == null || daclaccount == null)
+                                    {
+                                        Console.WriteLine("[!] Please specify both an account to remove access from and an object to conduct an operation on");
+                                    }
+                                    else
+                                    {
+                                        if (!String.IsNullOrEmpty(daclremove))
+                                        {
+                                            daclremove = daclremove.ToLower();
+                                        }
+                                        DACL.removeAce(obj, daclaccount, daclremove, guid);
                                     }
                                 }
                                 else

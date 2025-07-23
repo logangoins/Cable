@@ -223,6 +223,89 @@ namespace Cable.Modules
             }
 
         }
+
+        public static void removeAce(string obj, string account, string permission, string guid)
+        {
+            try
+            {
+                SearchResultCollection results;
+
+                DirectoryEntry de = new DirectoryEntry();
+                DirectorySearcher ds = new DirectorySearcher(de);
+
+                string query = "(samaccountname=" + obj + ")";
+                ds.Filter = query;
+                results = ds.FindAll();
+
+                if (results.Count == 0)
+                {
+                    Console.WriteLine("[!] Cannot find object");
+                    return;
+                }
+
+                foreach (SearchResult sr in results)
+                {
+                    DirectoryEntry mde = sr.GetDirectoryEntry();
+                    IdentityReference ir = new NTAccount(account);
+
+                    if (permission == "genericall")
+                    {
+                        ActiveDirectoryAccessRule adar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.GenericAll, AccessControlType.Allow, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.RemoveAccessRule(adar);
+                    }
+                    else if (permission == "genericwrite")
+                    {
+                        ActiveDirectoryAccessRule adar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.GenericWrite, AccessControlType.Allow, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.RemoveAccessRule(adar);
+                    }
+                    else if (permission == "resetpassword")
+                    {
+                        Guid rightGuid = new Guid("00299570-246d-11d0-a768-00aa006e0529");
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.RemoveAccessRule(ar);
+                    }
+                    else if (permission == "writemember")
+                    {
+                        Guid rightGuid = new Guid("bf9679c0-0de6-11d0-a285-00aa003049e2");
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.RemoveAccessRule(ar);
+                    }
+                    else if (guid != null)
+                    {
+                        Guid rightGuid = new Guid(guid);
+                        ActiveDirectoryAccessRule ar = new ActiveDirectoryAccessRule(ir, ActiveDirectoryRights.ExtendedRight, AccessControlType.Allow, rightGuid, ActiveDirectorySecurityInheritance.None);
+                        mde.Options.SecurityMasks = System.DirectoryServices.SecurityMasks.Dacl;
+                        mde.ObjectSecurity.RemoveAccessRule(ar);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[!] Please specify a valid permission or GUID");
+                    }
+
+                    mde.CommitChanges();
+                    if (!String.IsNullOrEmpty(permission))
+                    {
+                        Console.WriteLine("[+] Successfully removed " + permission + " from " + obj);
+                    }
+                    else
+                    {
+                        Guid rightGuid = new Guid(guid);
+                        string right = rightsGuidLookup(rightGuid);
+                        Console.WriteLine("[+] Successfully removed " + right + " from " + obj);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[!] Failed to write access control entry for " + obj);
+                Console.WriteLine("[!] Error: " + ex.Message);
+            }
+
+        }
         public static string GetDomainSID()
         {
             try
